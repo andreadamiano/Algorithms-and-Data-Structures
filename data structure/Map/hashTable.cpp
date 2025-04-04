@@ -18,6 +18,7 @@ class HashMap
             public:
                 K& getKey() const {return key; }
                 V& getValue() const {return value; }
+                void setValue (const V& _value) {value = _value; } 
 
                 Entry(const K& _key = K(), const V& _value = V()) : value(_value), key(_key) {}
 
@@ -42,7 +43,7 @@ class HashMap
                 const BucketArray* ba; //bucket array
 
             public:
-                Iterator(const BucketArray* _array, const BucketIt& _bit, const EntryIt& _eit = EntryIt()) : ba(_array), bit(_bit), eit(_eit) {}
+                Iterator(const BucketArray* _array, const BucketIt& _bit, const EntryIt& _eit = EntryIt()) : ba(&_array), bit(_bit), eit(_eit) {}
                 Entry& operator* () const {return * eit; } //return the element of the bucket 
                 bool operator== (const Iterator& other) const; 
                 Iterator& operator++() ; 
@@ -62,13 +63,14 @@ class HashMap
         Iterator end() {return Iterator(array, array.end());}
 
     protected:
+        //utility functions 
         Iterator finder(const K& key); 
         Iterator inserter(const Iterator& it, const Entry& entry); 
         void eraser (const Iterator& it); 
-        int MAD (const size_t& hash, const int& a, const int & b) {return (hash*a+b) % n;}
+        int MAD (const size_t& hash, const int& a, const int & b) {return (hash*a+b) % n;} //compressor 
 
-        static void nextEntry(Iterator& it) {++it.eit;}
-        static bool endBucket(const Iterator& it) {return it.eit == it.bit->end(); }
+        static void nextEntry(Iterator& it) {++it.eit;} //get the next entry of the bucket 
+        static bool endBucket(const Iterator& it) {return it.eit == it.bit->end(); } //check if the iterator is a the end of the bucket 
 
 }; 
 
@@ -86,9 +88,7 @@ bool HashMap<K, V, H>::Iterator::operator== (const Iterator& other) const
 
 template <typename K, typename V, typename H>
 HashMap<K, V, H>::Iterator& HashMap<K, V, H>::Iterator::operator++()
-{
-    ++eit; //next entry in the bucket 
-
+{ 
     if (endBucket(*this))
     {
         ++bit; //next bucket 
@@ -103,6 +103,8 @@ HashMap<K, V, H>::Iterator& HashMap<K, V, H>::Iterator::operator++()
             eit = bit->begin(); //initialize new entry iterator 
         } 
     }
+    else
+        ++eit; //next entry in the bucket
     return *this;
 }
 
@@ -117,7 +119,7 @@ HashMap<K, V, H>::Iterator HashMap<K, V, H>::begin()
     while(bit->empty())
         ++bit; //get the first non-empty bucket 
 
-    return Iterator(this, bit, bit->begin()); 
+    return Iterator(&array, bit, bit->begin()); 
 
 }
 
@@ -125,13 +127,83 @@ template <typename K, typename V, typename H>
 HashMap<K, V, H>::Iterator HashMap<K, V, H>::finder(const K& key)
 {
     int index = MAD(hash(key), 31, 17); //generate hash code and convert into an index using the compressor 
+    auto bit = array.begin() + index; //get the iterator of the bucket where the entry will be inserted 
+
+    Iterator it(array, bit, bit->begin()); //cretae iterator 
+
+    while(!endBucket() && (*it).getkey() != key)
+        nextEntry(it); 
+    
+    return it; 
+}
+
+template <typename K, typename V, typename H>
+HashMap<K, V, H>::Iterator HashMap<K, V, H>::find(const K& key)
+{
+    Iterator it = finder(key); 
+
+    if(endBucket(it))
+        return end(); 
+    
+    else 
+        return it; 
+}
+
+template <typename K, typename V, typename H>
+HashMap<K, V, H>::Iterator HashMap<K, V, H>::inserter(const Iterator& it, const Entry& entry)
+{
+    auto eit = it.bit->insert(it.eit, entry); 
+    n++; 
+
+    return Iterator(array, it.bit, eit); 
+}
+
+template <typename K, typename V, typename H>
+HashMap<K, V, H>::Iterator HashMap<K, V, H>::put(const K& key, const V& value)
+{
+    auto it = finder(key); //find the entry at key position 
+
+    if (endBucket(it))
+        return inserter(it, Entry(key, value)); 
+    
+    else
+    {    
+        it.eit->setValue(value); 
+        return it; 
+    }
+
+}
+
+template <typename K, typename V, typename H>
+void HashMap<K, V, H>::eraser (const Iterator& it)
+{
+    it.bit->erase(it.eit); 
+    n--; 
+}
+
+template <typename K, typename V, typename H>
+void HashMap<K, V, H>::erase (const K& key)
+{
+    auto it = finder(key); 
+
+    if (endBucket(it))
+        throw std::runtime_error("error: the entry doesn't exist");  
+    
+    else
+        eraser(it); 
+}
+
+template <typename K, typename V, typename H>
+void HashMap<K, V, H>::erase (const Iterator& it)
+{
+    eraser(it); 
 }
 
 
 class HashCode
 {
     public:
-        static constexpr size_t offset = 14695981039346656037ULL; //large prime number
+        static constexpr size_t offset = 14695981039346656037ULL; //large prime number (ULL stands for unsigned long long, 64 bit integer) (ULL is used to force the liter to be a 64 bit unsigned long long , the literal is the number used to be assigned to the type)
         static constexpr size_t alpha = 1099511628211ULL; //another large prime number 
 
         size_t operator() (const char* array, int len)
@@ -182,7 +254,7 @@ class HashCode
 
 int main ()
 {
-    HashCode hash; 
-    std::cout << hash("ciao come va") << "\n"; 
-    std::cout << hash(1243253.34543) << "\n"; 
+    HashMap<std::string, int, HashCode> map(101); 
+
+    std::cout << map.size(); 
 }
