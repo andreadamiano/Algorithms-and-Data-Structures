@@ -109,7 +109,7 @@ void ArrayStack<E>::pop()
         throw StackEmpty("error, the stack is empty"); 
 
     t--; //move the top index to the left (the element is not actually removed)
-}
+}   
 
 
 template<typename E>
@@ -198,7 +198,7 @@ int main ()
     //     temp.pop(); //pop the top element
     // }
 
-    Stack<int>* stack = new ArrayStack<int>;
+    Stack<int>* stack = new ArrayStack<int>; 
 
     // Stack<int>* stack = new LinkedStack<int>; 
     

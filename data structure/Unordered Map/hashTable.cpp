@@ -2,6 +2,7 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <cstdint>  // For uint32_t
 
 template <typename K, typename V, typename H>
 class HashMap 
@@ -9,6 +10,7 @@ class HashMap
     static constexpr int DEF_CAPACITY = 101; 
 
     private:
+
         class Entry
         {
             private:
@@ -16,8 +18,8 @@ class HashMap
                 V value; 
 
             public:
-                K& getKey() const {return key; }
-                V& getValue() const {return value; }
+                const K& getKey() const {return key; }
+                const V& getValue() const {return value; }
                 void setValue (const V& _value) {value = _value; } 
 
                 Entry(const K& _key = K(), const V& _value = V()) : value(_value), key(_key) {}
@@ -30,9 +32,9 @@ class HashMap
         using EntryIt = typename Bucket::iterator;
         using BucketIt = typename BucketArray::iterator;
 
-        int n; 
+        int n; //n of entries 
         H hash; //hash comparator                                                                        
-        BucketArray array; 
+        BucketArray array; //bucket array
 
     public:
         class Iterator
@@ -43,10 +45,12 @@ class HashMap
                 const BucketArray* ba; //bucket array
 
             public:
-                Iterator(const BucketArray* _array, const BucketIt& _bit, const EntryIt& _eit = EntryIt()) : ba(&_array), bit(_bit), eit(_eit) {}
+                Iterator(const BucketArray& _array, const BucketIt& _bit, const EntryIt& _eit = EntryIt()) : ba(&_array), bit(_bit), eit(_eit) {}
                 Entry& operator* () const {return * eit; } //return the element of the bucket 
                 bool operator== (const Iterator& other) const; 
                 Iterator& operator++() ; 
+                Entry* operator-> () {return &(*eit); }
+
                 
                 friend class HashMap; 
 
@@ -62,12 +66,16 @@ class HashMap
         Iterator begin();
         Iterator end() {return Iterator(array, array.end());}
 
-    protected:
+    public:
         //utility functions 
         Iterator finder(const K& key); 
         Iterator inserter(const Iterator& it, const Entry& entry); 
         void eraser (const Iterator& it); 
-        int MAD (const size_t& hash, const int& a, const int & b) {return (hash*a+b) % n;} //compressor 
+
+        //compressor
+        static constexpr uint32_t MAD_a = 2654435761; // Large 32-bit prime
+        static constexpr uint32_t MAD_b = 7; // Small odd number 
+        int MAD (const size_t& hash) {return (hash * MAD_a + MAD_b) % array.size();} 
 
         static void nextEntry(Iterator& it) {++it.eit;} //get the next entry of the bucket 
         static bool endBucket(const Iterator& it) {return it.eit == it.bit->end(); } //check if the iterator is a the end of the bucket 
@@ -89,22 +97,21 @@ bool HashMap<K, V, H>::Iterator::operator== (const Iterator& other) const
 template <typename K, typename V, typename H>
 HashMap<K, V, H>::Iterator& HashMap<K, V, H>::Iterator::operator++()
 { 
+    ++eit; //next entry in the bucket
+
     if (endBucket(*this))
     {
         ++bit; //next bucket 
 
         while (bit != ba->end() && bit->empty())
-        {
             ++bit; //find non-empty bucket 
 
-            if (bit == ba->end())
-                return *this; 
+        if (bit == ba->end())
+            return *this; 
 
-            eit = bit->begin(); //initialize new entry iterator 
-        } 
+        eit = bit->begin(); //initialize new entry iterator 
     }
-    else
-        ++eit; //next entry in the bucket
+    
     return *this;
 }
 
@@ -119,19 +126,19 @@ HashMap<K, V, H>::Iterator HashMap<K, V, H>::begin()
     while(bit->empty())
         ++bit; //get the first non-empty bucket 
 
-    return Iterator(&array, bit, bit->begin()); 
+    return Iterator(array, bit, bit->begin()); 
 
 }
 
 template <typename K, typename V, typename H>
 HashMap<K, V, H>::Iterator HashMap<K, V, H>::finder(const K& key)
 {
-    int index = MAD(hash(key), 31, 17); //generate hash code and convert into an index using the compressor 
+    int index = MAD(hash(key)); //generate hash code and convert into an index using the compressor 
     auto bit = array.begin() + index; //get the iterator of the bucket where the entry will be inserted 
 
     Iterator it(array, bit, bit->begin()); //cretae iterator 
 
-    while(!endBucket() && (*it).getkey() != key)
+    while(!endBucket(it) && (*it).getKey() != key)
         nextEntry(it); 
     
     return it; 
@@ -256,5 +263,14 @@ int main ()
 {
     HashMap<std::string, int, HashCode> map(101); 
 
-    std::cout << map.size(); 
+    map.put("ciao", 1); 
+    map.put("come", 2); 
+    map.put("stai", 3); 
+    map.put("?", 4); 
+
+    std::cout << "load factor: " << 4.0/101.0 << "\n"; 
+    for (auto it = map.begin(); it != map.end(); ++it)
+        std::cout << "value " << it->getValue() << " index " << map.MAD(HashCode()(it->getKey())) << "\n"; 
+
+
 }

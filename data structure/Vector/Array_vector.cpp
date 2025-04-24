@@ -138,7 +138,6 @@ int main ()
         vector->insert(0,1);
         vector->insert(1, 2);
         vector->insert(2,3);
-        vector->set(4,100);
     }catch(OutofRange& error)
     {
         std::cout << error.getError();

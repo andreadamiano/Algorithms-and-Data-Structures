@@ -161,21 +161,14 @@ void Tree::addChild(const Position& parent, const E& element, InsertPosition pos
     n++;
 }
 
-// Implementation of evaluateExpression
 int Tree::evaluateExpression(const Position& p) {
-    if (p.isExternal()) {
-        // If the node is external (leaf), return its value
+    if (p.isExternal()) 
         return *p;
-    }
 
-    // Recursively evaluate the left and right subtrees
     int leftValue = evaluateExpression(p.left());
     int rightValue = evaluateExpression(p.right());
-
-    // Get the operator from the current node
     char op = static_cast<char>(*p);
 
-    // Perform the operation based on the operator
     switch (op) {
         case '+':
             return leftValue + rightValue;
@@ -193,12 +186,11 @@ int Tree::evaluateExpression(const Position& p) {
     }
 }
 
-// Other member function implementations...
 
 int main() {
     Tree tree;
 
-    // Example: Build the expression tree for (3 + 5) * (7 - 2)
+    // Example: (3 + 5) * (7 - 2)
     tree.addChild(tree.Root(), '*', ROOT);
     tree.addChild(tree.Root(), '+', LEFT);
     tree.addChild(tree.Root(), '-', RIGHT);

@@ -2,42 +2,14 @@
 #include <vector>
 
 using E = int; 
+
 //a heap is a complete binary tree 
 class Heap
 {
     private: 
-            std::vector<E> vector; 
-            int n; 
-        
+            std::vector<E> vector;
+    
     public:
-        class Position; 
-
-        class PositionList
-        {
-            private:
-                std::vector<Position> children; 
-            
-            public:
-                class Iterator 
-                {
-                    private: 
-                        std::vector<Position>::iterator it; 
-                    
-                    public:
-                        Iterator(std::vector<Position>::iterator it) : it(it) {}
-                        Position& operator*() {return *it;} 
-                        bool operator==(const Iterator& iterator) const {return it == iterator.it;}
-                        bool operator!=(const Iterator& iterator) const {return it != iterator.it; }
-                        Iterator& operator++() {++it; return *this; }
-                        Iterator& operator--() {--it; return *this; }
-                }; 
-
-                PositionList(std::vector<Position>& children) : children(children) {}
-                Iterator begin() {return Iterator(children.begin()); }
-                Iterator end() {return Iterator(children.end()); }
-
-
-        }; 
 
         class Position
         {
@@ -50,29 +22,34 @@ class Heap
                 Position right() const {return Position(heap, index*2+1);} 
                 Position parent() const {return Position(heap, index/2);}
                 bool isRoot() const {return index ==1;}
-                bool isExternal() const {return (2*index >= heap->vector.size() || heap->vector[2*index] == E()) && (2*index+1 >= heap->vector.size() || heap->vector[2*index+1] == E());}
                 E& operator* () const {return heap->vector[index];}
                 bool operator==(const Position& p) const {return index == p.index; }
+                bool hasLeft() const {return 2*index <= heap->size();} 
+                bool hasRight() const {return 2*index +1 <= heap->size();}
 
                 Position(Heap* heap, int index) : heap(heap), index(index) {} 
                 friend class Heap; 
 
         }; 
 
-        Heap() : n(0), vector(2) {} 
-        int size() const {return n;} 
-        bool empty() const {return n==0;}
+        Heap() : vector(1) {} 
+        int size() const {return vector.size()-1;}
         Position Root()  {return Position(this, 1);} 
-        PositionList positions(); 
-        void addLast(const E& element); 
-        void removeLast(); 
-        void swap (const Position&p, const Position& other); 
-        bool hasRight(const Position& p); 
-        bool hasLeft (const Position& p);
-        bool isRoot (const Position& p);
-
-    protected:
-    void preorderTraverse(const Position& p, std::vector<Position>& positions); 
-    void postorderTraverse(const Position& p, std::vector<Position>& positions); 
-    void inorderTraverse(const Position& p, std::vector<Position>& positions); 
+        Position last() {return Position(this, size());} 
+        void addLast(const E& element) {vector.push_back(element);}
+        void removeLast() {vector.pop_back(); }
+        void swap (const Position&p, const Position& other) {E temp = *p; *p = *other; *other = temp;}
 };
+
+int main ()
+{
+    Heap h; 
+    h.addLast(0);
+    h.addLast(1);
+    h.addLast(2);
+    h.addLast(3);
+    h.addLast(4);
+    h.addLast(5);
+
+    std::cout << *(h.Root().right().left());
+}

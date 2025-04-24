@@ -14,6 +14,7 @@ struct Point
     }
 }; 
 
+//comparator functor 
 template <typename E>
 class LeftRight
 {
@@ -25,6 +26,7 @@ class LeftRight
 
 };
 
+//comparator 
 template <typename E>
 class BottomTop
 {

@@ -15,9 +15,9 @@ void descendants(Tree::Position&& p, std::unordered_map<Tree::Position, Node, Tr
     count++; 
     positions.insert({p, Node(count)});
 
-    if (!p.isExternal())
+    if (!p.isExternal()) // {} is used to make a pair 
         descendants(p.left(), positions, count); 
-    // positions.push_back(p);  
+   
     if (!p.isExternal())
         descendants(p.right(), positions, count); 
     positions.at(p).rightVisit = count; 

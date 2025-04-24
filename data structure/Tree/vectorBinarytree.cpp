@@ -89,6 +89,7 @@ void Tree::preorderTraverse(const Position& p, std::vector<Position>& positions)
         stack.pop();
         positions.push_back(current);
 
+        //push to the stack 
         if(!current.isExternal())
         {
             stack.push(current.right());

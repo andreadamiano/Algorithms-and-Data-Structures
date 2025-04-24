@@ -42,7 +42,7 @@ class List
         Node<T>* tail; 
 
     protected: 
-    //utility functions 
+        //utility functions 
         void addbefore(Node<T>* target_node, const T& element); //add new node before a target node
         void remove(Node<T>* target_node); 
 }; 
