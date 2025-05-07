@@ -1,0 +1,95 @@
+1. Array & String
+    Two pointers
+    Sliding window
+    Prefix sum
+    Kadane’s algorithm
+    Sorting
+
+2. Hash Table / Set / Map
+    Frequency counting
+    Grouping
+    Lookup optimizations (e.g., O(1) access)
+
+3. Linked List
+    Reversal
+    Fast & slow pointers
+    Merge / split
+    Cycle detection
+
+4. Stack / Monotonic Stack
+    Next greater/smaller element
+    Expression evaluation
+    Parentheses matching
+
+5. Queue / Deque
+    Sliding window max
+    BFS (breadth-first search)
+
+6. Tree / Binary Tree / Binary Search Tree (BST)
+    Traversals (inorder, preorder, postorder, level-order)
+    Recursion & DFS
+    Balanced trees
+    Lowest common ancestor
+
+7. Heap / Priority Queue
+    Top K elements
+    Merge k sorted lists
+    Dijkstra's algorithm
+
+8. Recursion / Backtracking
+    Permutations & combinations
+    Subsets
+    N-Queens, Sudoku
+    DFS with constraints
+
+9. Dynamic Programming (DP)
+    1D, 2D DP
+    Memoization vs tabulation
+    Knapsack, LIS, LCS, Edit Distance
+    State compression
+
+10. Greedy
+    Interval scheduling
+    Jump game
+    Huffman coding
+
+11. Binary Search
+    On arrays
+    On answer space (e.g., search min/max value)
+    With conditions
+
+12. Graph
+    DFS & BFS
+    Union-Find (Disjoint Set)
+    Topological sort
+    Dijkstra, Bellman-Ford, Floyd-Warshall
+
+13. Bit Manipulation
+    XOR tricks
+    Bitmask DP
+    Counting bits
+
+14. Math
+    Prime numbers (Sieve of Eratosthenes)
+    GCD/LCM
+    Modular arithmetic
+    Combinatorics
+
+15. Trie / String Algorithms
+    Prefix trees
+    Aho-Corasick
+    Rabin-Karp
+    KMP (Knuth-Morris-Pratt)
+
+16. Sliding Window
+    Fixed-length or variable-length window problems
+
+17. Design / LRU Cache / OOD
+    Implementing data structures
+    Maintaining state
+    LFU / LRU cache design
+
+18. Simulation / Game Theory
+    Grid traversal
+    Game-winning strategies (Minimax)
+
