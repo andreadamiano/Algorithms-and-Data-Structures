@@ -22,6 +22,7 @@ void BubbleSort(Sequence& s)
         }
     }
 }
+
 void BubbleSort2 (Sequence& s)
 {
     for (int i =0; i< s.size(); ++i)

@@ -5,6 +5,7 @@ using namespace std;
 
 vector<int> buildLastFunction(const string& patter)
 {
+    //this function builds an array containing for each character of the pattern the last time it appers in the string 
     const int N_ASCII = 128; //n of ASCII carachters 
     vector<int> last (N_ASCII); 
 
@@ -86,14 +87,14 @@ vector<int> failureFunction(const string& pattern)
     return fail; 
 }
 
-int KPPAlgorithm(const string& text, const string& patter)
+int KPPAlgorithm(const string& text, const string& pattern)
 {
-    vector<int> fail = failureFunction(patter);
+    vector<int> fail = failureFunction(pattern);
     int i =0; //text pointer 
     int j =0; //pattern pointer 
     while(i <text.size())
     {
-        if(patter[j] == text[i])
+        if(pattern[j] == text[i])
         {
             if(j ==pattern.size()-1)
                 return i - pattern.size() +1; //found a match 
@@ -113,9 +114,27 @@ int KPPAlgorithm(const string& text, const string& patter)
     return -1; //no match
 }
 
+int BruteForcePatternMatching(std::string& text, std::string& pattern)
+{
+    for (int i =0; i < text.size(); ++i)
+    {
+        int j=i; 
+        int k=0; 
+        while(text[j] == pattern[k] && k < pattern.size())
+        {
+            ++j; 
+            ++k; 
+        }
+        if (k == pattern.size())
+            return i; 
+    }
+    return -1; 
+}
+
 int main ()
 {
     string pattern = "CIAO"; 
     string text = "EIII CIAO"; 
-    cout << patterMatching(text, pattern); 
+    cout << patterMatching(text, pattern) << "\n"; 
+    cout << BruteForcePatternMatching(text, pattern); 
 }

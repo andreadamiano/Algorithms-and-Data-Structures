@@ -29,7 +29,7 @@ void myFunction() {
     std::cout << "Hello from myFunction!" << std::endl;
 }
 
-void funzione (int *a) // pass by pointer
+void funzione ( int *a) // pass by pointer
 {
     *a = 10;
     std::cout << "funzione" << std::endl;

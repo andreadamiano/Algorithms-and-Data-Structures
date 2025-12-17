@@ -35,5 +35,5 @@ void drawRuler(int inches, int majorLenght)
 
 int main ()
 {
-    drawRuler(3, 5); 
+    drawRuler(1, 5); 
 }

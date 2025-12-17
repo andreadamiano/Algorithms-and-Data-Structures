@@ -4,7 +4,7 @@
 int main ()
 {
 
-    // Bitwise complement operator
+    // Bitwise complement operator (invert bits)
     int num = 10; 
     int num_2 = ~num; 
     std::bitset<32> bits = num_2;  // Prints the bits of the integer in 32 bits
@@ -14,7 +14,7 @@ int main ()
     std::cout << bits_2 << std::endl;
     std::cout << bits << std::endl;
 
-    // Bitwise and operator
+    // Bitwise and operator (if both bits are 1 -> 1)
     int num_3 = 10;
     int num_4 = 12;
     int num_5 = num_3 & num_4;
@@ -71,7 +71,7 @@ int main ()
 
     // Bitwise right shift
     int num_14 = 10;
-    int num_15 = num_14 >> 5; //shifts the bits to the right by 1
+    int num_15 = num_14 >> 1; //shifts the bits to the right by 1
 
     std::bitset<32> bits_14 = num_14;  // Prints the bits of the integer in 32 bits
     std::bitset<32> bits_15 = num_15;  // Prints the bits of the integer in 32 bits
@@ -81,7 +81,7 @@ int main ()
     std::cout << bits_14 << std::endl;
     std::cout << bits_15 << std::endl;
 
-    //negative number 
+    //negative number (represented in 2's complement, invert all bits and add 1 at the end)
     int num_16 = -10;
 
     std::bitset<32> bits_16 = num_16;  // Prints the bits of the integer in 32 bits

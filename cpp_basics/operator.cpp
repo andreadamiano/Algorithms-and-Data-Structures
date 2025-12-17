@@ -7,7 +7,7 @@ class myclass
         int num_2;
 };
 
-int myclass::num = 10; // static variable initialization
+int myclass::num = 10; // static variable initialization, static member are accessed with :: 
 
 class Complex 
 {

@@ -1,9 +1,9 @@
 #include <iostream>
 
-int num = 10; // Global variable
+static int num = 10; // Global variable, static means that the global variables is accessible only within this file
 
 int main ()
 {
-    int num = 20; // Local variable
+    // int num = 20; // Local variable
     std::cout << num << std::endl; // 20
 }

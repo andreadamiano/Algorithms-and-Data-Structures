@@ -63,7 +63,7 @@ bool isSolution(std::unordered_map<char, int> map)
 }
 
 
-//function to explore all possible combinations 
+//this function will generate all passible permutations of the 9 digits 
 std::vector<std::unordered_map<char, int> > PuzzleSolve(int k , std::vector<char>& S, std::vector<char>& U)
 {
     //create a copy of U to iterate over (since U gets modified in the loop)
@@ -74,13 +74,13 @@ std::vector<std::unordered_map<char, int> > PuzzleSolve(int k , std::vector<char
     for (auto e : elements)
     {
         auto it = std::find(U.begin(), U.end(), e); //find iterator 
-        U.erase(it); //erase eliminate the element at a specific position 
+        U.erase(it); //eliminate the element at a specific position 
         S.push_back(e); 
         if (k == 1) 
         {
-            //create hash map 
+            //once a permutation has been determined map all digits to the corresponding letters 
             std::unordered_map<char, int> map; 
-            for (int i=0; i<8; i++)
+            for (int i=0; i<unique_letters.size(); i++)
             {
                 map[unique_letters[i]] = S[i] - '0'; //convert ascii value into int 
             }
@@ -108,20 +108,15 @@ std::vector<std::unordered_map<char, int> > PuzzleSolve(int k , std::vector<char
 int main ()
 {
     std::vector<char> U {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    // std::vector<char> U {'a', 'b', 'c'};
-
     std::vector<char> S;   
 
     int k = static_cast<int>(unique_letters.size());
-    // int k {3} ; 
-
-
     auto solutions = PuzzleSolve(k, S, U); 
 
     //nunmber of solutions found 
     std::cout << "n of solutions: " << solutions.size() << std::endl; 
 
-    std::cout << "tot number of recursions: " << count;
+    std::cout << "tot number of recursions: " << count << "\n";
 
 
     //print solutions

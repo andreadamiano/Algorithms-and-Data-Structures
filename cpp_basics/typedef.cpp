@@ -2,6 +2,8 @@
 
 typedef int* IntPtr;
 
+//using IntPtr = int *;   //modern equivalent 
+
 int main ()
 {
     int num = 10;

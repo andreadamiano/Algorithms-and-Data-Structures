@@ -7,6 +7,7 @@
     #include <unordered_map>
     #include <memory>
     #include <bitset>
+    #include <sstream>
 
     //Huffman encoding 
     class Compression
@@ -41,15 +42,14 @@
         public:
             Compression(const std::string& text); 
             ~Compression();
+            std::string Encode(); 
+            std::string Decode(const std::string& encoded_text); 
 
         protected:
             void Huffman(const std::string& text);
             void generateCodes(Node* node, std::string&& code);  
-            void Encode(); 
             void clear(Node* node); 
     }; 
-
-
 
 
     Compression::Compression(const std::string& text) : text(text)
@@ -61,7 +61,6 @@
         {
             std::cout << "char: " << it->first << " code: " << it->second <<"\n"; 
         }
-        Encode(); 
     }   
 
     Compression::~Compression()
@@ -88,13 +87,13 @@ void Compression::Huffman(const std::string& text)
     //compute frequencies and store in a hash map 
     for (const char& ch: text)
     {
-        freqMap[ch] ++;  
+        freqMap[ch] ++;   //by default new entries will have a value of 0 
     }
 
     //order them using a priority queue (from less frequent to more frequent)
     for (const auto& pair : freqMap)
     { 
-        pq.push(new Node(pair.second, pair.first)); 
+        pq.push(new Node(pair.second, pair.first));  //push the pointers not the actual nodes 
     }
 
 
@@ -135,22 +134,38 @@ void Compression::generateCodes(Node* node, std::string&& code)
 }
 
 
-void Compression::Encode()
+std::string Compression::Encode()
 {
     if (codes.empty())
-        return; 
+        return ""; 
 
-
-    std::cout << "Encoded text:\n"; 
+    std::stringstream buffer; 
     for(char& ch: text)
     {
-        std::cout << codes[ch]; 
+        buffer << codes[ch]; 
     }
 
-    std::cout << "\nBinary text:\n";  
-    for(char& ch: text)
-    {
-        std::bitset<8> bits(ch);
-        std::cout << bits; 
-    }
+    return buffer.str(); 
 }
+
+std::string Compression::Decode(const std::string& encoded_text)
+{
+    Node* node = root; //start from the root of the Huffman tree 
+    std::stringstream buffer; 
+
+    for (const auto ch: encoded_text)
+    {
+        if(ch == '0')
+            node = node->left; 
+        else 
+            node = node->right; 
+
+        if (node->left == nullptr && node->right == nullptr)
+        {
+            buffer << node->character;
+            node = root; //go back to the root of the tree 
+        }
+    }
+
+    return buffer.str(); 
+}   
