@@ -17,5 +17,5 @@ int main ()
         std::cout << bits; 
     }
 
-    std::cout << "\nEncoded text: " << compressor.Decode(encoded_text) << "\n"; 
+    std::cout << "\nDecoded text: " << compressor.Decode(encoded_text) << "\n"; 
 }
