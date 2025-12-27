@@ -7,7 +7,7 @@ using namespace std;
 int main ()
 {
     StandardTries trie; 
-    std::vector<std::string> words = { "cico", "cicoria", "cicore", "cicorato" };
+    std::vector<std::string> words = { "cico", "cicoria", "cicore", "cicorato", "andrea" };
     for (const auto& w : words) trie.insert(w);
     // auto root = tries.Root(); 
     trie.print(); 
