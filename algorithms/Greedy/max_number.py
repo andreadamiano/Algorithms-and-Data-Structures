@@ -1,7 +1,7 @@
 def prep(nums, k):
     """Get best subsequence"""
     drop = len(nums) - k
-    out = []  #monotonic decreasing stack 
+    out = []  #monotonic increasing stack 
     for num in nums:
         while drop and out and out[-1] < num:
             out.pop()
