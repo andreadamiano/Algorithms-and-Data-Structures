@@ -48,6 +48,7 @@ class HashMap
                 Iterator(const BucketArray& _array, const BucketIt& _bit, const EntryIt& _eit = EntryIt()) : ba(&_array), bit(_bit), eit(_eit) {}
                 Entry& operator* () const {return * eit; } //return the element of the bucket 
                 bool operator== (const Iterator& other) const; 
+                bool operator!= (const Iterator& other) const; 
                 Iterator& operator++() ; 
                 Entry* operator-> () {return &(*eit); }
 
@@ -95,7 +96,13 @@ bool HashMap<K, V, H>::Iterator::operator== (const Iterator& other) const
 }
 
 template <typename K, typename V, typename H>
-HashMap<K, V, H>::Iterator& HashMap<K, V, H>::Iterator::operator++()
+bool HashMap<K, V, H>::Iterator::operator!= (const Iterator& other) const
+{
+    return !(*this == other);
+}
+
+template <typename K, typename V, typename H>
+typename HashMap<K, V, H>::Iterator& HashMap<K, V, H>::Iterator::operator++()
 { 
     ++eit; //next entry in the bucket
 
@@ -116,7 +123,7 @@ HashMap<K, V, H>::Iterator& HashMap<K, V, H>::Iterator::operator++()
 }
 
 template <typename K, typename V, typename H>
-HashMap<K, V, H>::Iterator HashMap<K, V, H>::begin()
+typename HashMap<K, V, H>::Iterator HashMap<K, V, H>::begin()
 {
     if (empty())  //if the HashMap is empty 
         return end();
@@ -131,7 +138,7 @@ HashMap<K, V, H>::Iterator HashMap<K, V, H>::begin()
 }
 
 template <typename K, typename V, typename H>
-HashMap<K, V, H>::Iterator HashMap<K, V, H>::finder(const K& key)
+typename HashMap<K, V, H>::Iterator HashMap<K, V, H>::finder(const K& key)
 {
     int index = MAD(hash(key)); //generate hash code and convert into an index using the compressor 
     auto bit = array.begin() + index; //get the iterator of the bucket where the entry will be inserted 
@@ -145,7 +152,7 @@ HashMap<K, V, H>::Iterator HashMap<K, V, H>::finder(const K& key)
 }
 
 template <typename K, typename V, typename H>
-HashMap<K, V, H>::Iterator HashMap<K, V, H>::find(const K& key)
+typename HashMap<K, V, H>::Iterator HashMap<K, V, H>::find(const K& key)
 {
     Iterator it = finder(key); 
 
@@ -157,7 +164,7 @@ HashMap<K, V, H>::Iterator HashMap<K, V, H>::find(const K& key)
 }
 
 template <typename K, typename V, typename H>
-HashMap<K, V, H>::Iterator HashMap<K, V, H>::inserter(const Iterator& it, const Entry& entry)
+typename HashMap<K, V, H>::Iterator HashMap<K, V, H>::inserter(const Iterator& it, const Entry& entry)
 {
     auto eit = it.bit->insert(it.eit, entry); 
     n++; 
@@ -166,7 +173,7 @@ HashMap<K, V, H>::Iterator HashMap<K, V, H>::inserter(const Iterator& it, const 
 }
 
 template <typename K, typename V, typename H>
-HashMap<K, V, H>::Iterator HashMap<K, V, H>::put(const K& key, const V& value)
+typename HashMap<K, V, H>::Iterator HashMap<K, V, H>::put(const K& key, const V& value)
 {
     auto it = finder(key); //find the entry at key position 
 
