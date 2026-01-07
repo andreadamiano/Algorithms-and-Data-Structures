@@ -24,8 +24,11 @@
 #     return dp()
 
 
-def max_envelopes(envelopes):
-    envelopes.sort(key=lambda x: (x[0], -x[1]))
+def max_envelopes(envelopes: list):
+    #sort width in increasing order 
+    #sort height in decreasing order 
+    envelopes.sort(key=lambda x: (x[0], -x[1])) 
+    print(envelopes)
     
     import bisect
     dp = []
@@ -40,5 +43,5 @@ def max_envelopes(envelopes):
                 
 
 if __name__ == "__main__":
-    envelopes = [[5,4],[6,4],[6,7],[2,3]]
+    envelopes = [[2,4],[6,4],[6,7],[2,3]]
     print(max_envelopes(envelopes))
