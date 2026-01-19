@@ -35,7 +35,7 @@ void a_star(Graph& graph, std::shared_ptr<Graph::Node> initial_node, std::shared
         }
         else
         {
-            node->decorator.set("distance_from_initial_node", std::make_shared<Integer>(INT_MAX));
+            node->decorator.set("distance_from_initial_node", std::make_shared<Integer>(~0));
         }
         
         // Heuristic: Euclidean distance to end node

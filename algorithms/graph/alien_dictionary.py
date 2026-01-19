@@ -118,9 +118,7 @@ def foreign_dictionary(words):
             if word_prev[j] != word_curr[j]:
                 adjency_list[word_prev[j]].add(word_curr[j])
                 break
-
-    adjency_list['o'] = set()
-    adjency_list['n'].add('o')
+            
     print(adjency_list)
 
     resopnse =  []
@@ -150,3 +148,8 @@ def foreign_dictionary(words):
 if __name__ == "__main__":
     words = ["hrn","hrf","er","enn","rfnn"]
     print(foreign_dictionary(words))
+
+    n = 5
+    n = 6
+    n = 7
+    print(n & 1)
