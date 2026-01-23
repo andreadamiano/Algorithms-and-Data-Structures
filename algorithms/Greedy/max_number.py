@@ -1,9 +1,9 @@
 def prep(nums, k):
     """Get best subsequence"""
     drop = len(nums) - k
-    out = []  #monotonic increasing stack 
+    out = []  #monotonic decreasing stack 
     for num in nums:
-        while drop and out and out[-1] < num:
+        while drop and out and num > out[-1]:
             out.pop()
             drop -= 1
         out.append(num)
@@ -43,8 +43,8 @@ if __name__ == "__main__":
     nums2 = [9,1,2,5,8,3]
     k = 5
 
-    # out = prep(nums1, 2)
-    # print(out)
+    out = prep(nums2, 3)
+    print(out)
 
     result = max_number(nums1, nums2, k)
     print(result)
