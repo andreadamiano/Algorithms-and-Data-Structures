@@ -20,6 +20,14 @@
         }
       ],
       "preLaunchTask": "Build with g++ compiler 14.2.0"
+    },
+    {
+      "name": "Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true
     }
   ]
 }
