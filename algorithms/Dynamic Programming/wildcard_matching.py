@@ -17,13 +17,15 @@ def isMatch(s: str, p: str) -> bool:
                     dp[i][j] = dp[i-1][j-1]
 
         #print result
-        print(dp)
+        for row in dp:
+            print(row)
 
         
         return dp[ls][lp]
 
 if __name__ == "__main__":
     s = "abcd"
+    s = "ab"
     p = "?*"
     print(isMatch(s, p))
 
