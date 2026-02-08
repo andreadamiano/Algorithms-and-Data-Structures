@@ -7,12 +7,7 @@ vector<int> buildLastFunction(const string& patter)
 {
     //this function builds an array containing for each character of the pattern the last time it appers in the string 
     const int N_ASCII = 128; //n of ASCII carachters 
-    vector<int> last (N_ASCII); 
-
-    for (int i =0; i< N_ASCII; ++i)
-    {
-        last[i] = -1; //initialize charachter set 
-    }
+    vector<int> last (N_ASCII, -1); 
 
     for (int i =0; i<patter.size(); ++i)
         last[patter[i]] = i; 
@@ -24,8 +19,8 @@ int patterMatching(const string& text, const string& pattern)
 {
     int lt = text.size(); 
     int lp = pattern.size(); 
-    vector<int> last = buildLastFunction(pattern); 
-
+    vector<int> last = buildLastFunction(pattern);  
+    
     if (lp  > lt)
         return -1; 
 
