@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <climits>
 
 // int min_coins(std::vector<int>& coins, int total)
 // {
