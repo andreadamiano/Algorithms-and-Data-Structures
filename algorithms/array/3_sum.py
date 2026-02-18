@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 def three_sum(nums: list):
     res = []
     nums.sort() 
@@ -12,6 +14,7 @@ def three_sum(nums: list):
         j = i +1
         k = len(nums) - 1
 
+        # 2 pointers approach 
         while j < k:
             total = nums[i] + nums[j] + nums[k]
 
