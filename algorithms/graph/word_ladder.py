@@ -3,7 +3,7 @@ from collections import deque
 def ladder_lenght(beginWord, endWord, wordList):
     #use bfs to find the shortest path
     wordList = set(wordList)
-    queue = deque([[beginWord, 1]]) #add first noe to the queue 
+    queue = deque([[beginWord, 1]]) #add first node to the queue 
 
     while(queue):
         word, length = queue.popleft()
