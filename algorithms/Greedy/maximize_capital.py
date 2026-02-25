@@ -23,9 +23,14 @@ def maximize_capital(k, w, profits, capital):
 
 
 if __name__ == "__main__":
-    k = 1
+    # k = 1
+    # w = 0 
+    # profits = [1,2,3] 
+    # capital = [1,1,2]
+
+    k = 3 
     w = 0 
     profits = [1,2,3] 
-    capital = [1,1,2]
+    capital = [0,1,2]
 
     print(maximize_capital(k, w, profits, capital))
