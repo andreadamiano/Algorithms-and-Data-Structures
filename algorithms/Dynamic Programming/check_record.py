@@ -1,6 +1,6 @@
 def check_record_bu(n):
     """Top-down solution"""
-    memo = [[[-1 for _ in range(3)] for _ in range(2)] for _ in range(n) ] # temp[cur_ind][count_a][count_l]
+    memo = [[[-1 for _ in range(3)] for _ in range(2)] for _ in range(n) ] # temp[cur_ind][count_a][count_l] , curr_ind represnet the current day being processed 
     print(memo)
     MOD: int = 10**9 + 7
      
