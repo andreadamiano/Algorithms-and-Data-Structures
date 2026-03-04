@@ -31,6 +31,7 @@ def three_sum(nums: list):
                 #avoid duplicates 
                 while nums[j] == nums[j-1] and j < k:
                     j += 1
+                k -= 1
 
     return res
 
