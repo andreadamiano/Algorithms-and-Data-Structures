@@ -18,7 +18,7 @@ def count_smaller_merge(nums):
             left, right = merge_sort(enum[:half]), merge_sort(enum[half:])
             for i in range(len(enum)-1, -1, -1):
                 if not right or left and left[-1][1] > right[-1][1]:
-                    smaller[left[-1][0]] += len(right)
+                    smaller[left[-1][0]] += len(right) #increment the counter of the biggest of the left section 
                     enum[i] = left.pop()
                 else:
                     enum[i] = right.pop()
@@ -31,5 +31,6 @@ def count_smaller_merge(nums):
 
 if __name__ == "__main__":
     nums = [5,2,6,1]
+    print(list(enumerate(nums)))
     print(count_smaller(nums))
     print(count_smaller_merge(nums))
