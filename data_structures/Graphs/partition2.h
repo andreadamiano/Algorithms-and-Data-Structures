@@ -30,7 +30,7 @@ class Partition
     public:
         bool isRoot(const std::shared_ptr<Position> p) {return p->set == p;  }
         std::shared_ptr<Position> Union(std::shared_ptr<Position> A, std::shared_ptr<Position> B);  
-        std::shared_ptr<Position> find(const std::string& string); 
+        std::shared_ptr<Position> find(const T& element); 
         std::shared_ptr<Position> find(std::shared_ptr<Position> p); 
         std::shared_ptr<Position> makeSet(const T& element); 
 }; 
@@ -58,10 +58,10 @@ std::shared_ptr<typename Partition<T>::Position> Partition<T>::Union(std::shared
 }
 
 template<typename T>
-std::shared_ptr<typename Partition<T>::Position> Partition<T>::find(const std::string& string)
+std::shared_ptr<typename Partition<T>::Position> Partition<T>::find(const T& element)
 {
     //get position 
-    auto it = positions.find(string); 
+    auto it = positions.find(element); 
     if (it == nullptr)
         return nullptr; 
 
