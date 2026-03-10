@@ -35,7 +35,7 @@ def minimumCost(source, target, original, changed, cost):
     dp[0] = 0  #represent the cost to convert source[:i] to target[:i]
 
     for i in range(n):
-        if dp[i] == INF:
+        if dp[i] == INF:  #current node cannot be accessed, since the distance is infite
             continue
 
         #if the 2 char are already identical no need to convert and to spend anything 
