@@ -12,7 +12,7 @@ def isMatch(s: str, p: str) -> bool:
         for i in range(1, ls+1):
             for j in range(1, lp+1):
                 if p[j-1] == "*":
-                    dp[i][j] = dp[i-1][j] or dp[i][j-1]
+                    dp[i][j] = dp[i-1][j] or dp[i][j-1]  #dp[i-1][j] represent using * to consume the current char, dp[i][j-1] represent using * to match zero char
                 elif p[j-1] == "?" or s[i-1] == p[j-1]:
                     dp[i][j] = dp[i-1][j-1]
 
