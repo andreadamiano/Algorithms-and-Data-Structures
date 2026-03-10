@@ -24,8 +24,8 @@ int patterMatching(const string& text, const string& pattern)
     if (lp  > lt)
         return -1; 
 
-    int j = lp -1; 
-    int i = j; 
+    int j = lp -1;  //pattern pointer 
+    int i = j;   //text pointer 
     do 
     {
         if (pattern[j] == text[i])
@@ -42,7 +42,7 @@ int patterMatching(const string& text, const string& pattern)
 
         else
         {
-            i = i + lp - min(j, 1+ last[text[i]]);      
+            i = i + lp - min(j, 1+ last[text[i]]);    //find the last occurrence of the not matching element of the text and align it with the pattern 
             j = lp-1; 
         }
     

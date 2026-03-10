@@ -1,7 +1,7 @@
 def isMatch(s: str, p: str) -> bool:
         ls = len(s)
         lp = len(p)
-        dp = [[False] * (lp+1) for _ in range(ls+1)]
+        dp = [[False] * (lp+1) for _ in range(ls+1)]  #dp[i][j] represent if s[:i] mathc with p[:j]
         dp[0][0] = True 
 
         #empty string match only *

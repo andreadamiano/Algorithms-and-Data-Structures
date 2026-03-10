@@ -19,20 +19,20 @@ class Trie:
         current_node.end_word = True
         
 
-def dfs(x, y, lx, ly, current_node: Node, board, words_found, word):
+def dfs(x, y, lx, ly, current_node: Node, board, words_found: list, word):
     if x < 0 or y < 0 or x >= lx or y >= ly:
         return False
     
-    if board[y][x] == "*":
+    if board[y][x] == "*": #if char already visited skip
         return False
     
-    if board[y][x] in current_node.children:
-        current_node = current_node.children.get(board[y][x])
+    if board[y][x] in current_node.children: #visit char only if it's part of ane xisting word
+        current_node = current_node.children.get(board[y][x]) 
         word += board[y][x]
     else:
         return False
     
-    if current_node.end_word:
+    if current_node.end_word: #if a new word was found return 
         board[y][x] = "*"
         words_found.add(word)
         if not current_node.children:
@@ -42,7 +42,7 @@ def dfs(x, y, lx, ly, current_node: Node, board, words_found, word):
     for dx, dy in directions:
         result = dfs(x+dx, y+dy, lx, ly, current_node, board, words_found, word)
 
-        if result:
+        if result:  #if a new word was found mark the character as visited 
             board[y][x] = "*"
             return True
 
@@ -58,7 +58,7 @@ def find_words(board, words):
     lx = len(board[0])
     ly = len(board)
     words_found = set()
-    for y in range(ly):
+    for y in range(ly): #start from every cell of the board
         for x in range(lx):
             dfs(x, y, lx, ly, trie.root, board, words_found, "")
 
