@@ -29,7 +29,7 @@ def check_record(n):
     dp_last: list[list[int]] = [[0 for _ in range(3)] for _ in range(2)]  # previous state
     dp_current: list[list[int]] = [[0 for _ in range(3)] for _ in range(2)]  # current state 
 
-    dp_last[0][0] = 1  # empty string
+    dp_last[0][0] = 1  # 1 way to have an empty string
 
     for _ in range(n):
         for count_a in range(2):
