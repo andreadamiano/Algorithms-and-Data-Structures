@@ -1,6 +1,7 @@
 def find_loop(array):
     # cannot allocate more memory 
     # convert the array into a linked list and use 2 pointer to find the loop 
+    # Floyd’s Cycle-Finding Algorithm
     p1 = p2 = 0
 
     while True:
