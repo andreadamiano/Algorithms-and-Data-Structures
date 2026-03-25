@@ -22,31 +22,31 @@ int min_coins(std::vector<int>& coins, int total)
 }
 
 
-std::unordered_map<int, int> memo; 
-int min_coins(std::vector<int> coins, int total)
-{
-    //top down solution
-    if (memo.find(total) != memo.end())
-        return memo[total]; 
+// std::unordered_map<int, int> memo; 
+// int min_coins(std::vector<int> coins, int total)
+// {
+//     //top down solution
+//     if (memo.find(total) != memo.end())
+//         return memo[total]; 
 
-    if (total ==0)
-        return 0; 
+//     if (total ==0)
+//         return 0; 
 
-    if (total < 0)
-        return INT_MAX; 
+//     if (total < 0)
+//         return INT_MAX; 
 
-    int result = INT_MAX; 
-    for (auto coin : coins)
-    {
-        int intermediate = min_coins(coins, total - coin); 
+//     int result = INT_MAX; 
+//     for (auto coin : coins)
+//     {
+//         int intermediate = min_coins(coins, total - coin); 
 
-        if (intermediate != INT_MAX) //check if the subproblem has a solution 
-            result = std::min(result, intermediate +1); 
-    }
+//         if (intermediate != INT_MAX) //check if the subproblem has a solution 
+//             result = std::min(result, intermediate +1); 
+//     }
     
-    memo[total] = result; 
-    return result; 
-}
+//     memo[total] = result; 
+//     return result; 
+// }
 
 
 int main()
