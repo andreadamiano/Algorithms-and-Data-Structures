@@ -34,7 +34,7 @@ def max_number(nums1, nums2, k):
 
     return max(merge(prep(nums1, i), prep(nums2, k-i))
            for i in range(k+1)
-           if i <= len(nums1) and k-i <= len(nums2))
+           if i <= len(nums1) and k-i <= len(nums2))  # (for _ in range()) syntax builds a generator
 
 
 
