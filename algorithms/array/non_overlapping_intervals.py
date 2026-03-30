@@ -10,7 +10,7 @@ def remove_overlapping_interval(intervals: list):
     prev_index = 0
 
     while current_index < n:
-        if intervals[prev_index][1] > intervals[current_index][0]:
+        if intervals[prev_index][1] > intervals[current_index][0]: #remove the current interval
             result += 1
 
         else:
@@ -37,7 +37,7 @@ def remove_overlapping_interval_dp(intervals: list):
                 dp[i] = max(dp[i], dp[j] + 1)
     
     print(dp)
-    max_keepable = max(dp)
+    max_keepable = dp[-1]
     return n - max_keepable
 
 

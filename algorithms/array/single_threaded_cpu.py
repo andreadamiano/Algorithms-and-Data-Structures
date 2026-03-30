@@ -4,7 +4,7 @@ def get_order(tasks: list):
     available_tasks = []
     response = []
 
-    #sort tasks 
+    #sort tasks based on task start time
     tasks = sorted([(task[0], task[1], index) for index, task in enumerate(tasks)])
     print(tasks)
 
