@@ -13,7 +13,7 @@ def longestValidParentheses(s):
             if not stack:
                 stack.append(i)  #if empty stack push to save the last invalid position
 
-            else: 
+            else: #if the stack is not empty it means a valid parenthesis was matched 
                 current_len = i - stack[-1]  # stack[-1] store the index of the last unmatched parenthesis 
                 max_len = max(max_len, current_len)
     
@@ -22,7 +22,7 @@ def longestValidParentheses(s):
 
 if __name__ == "__main__":
     s = "()))"
-    s = ")()())"
+    # s = ")()())"
     # s = "(()"
     # s = "(())"
     # s = ""
