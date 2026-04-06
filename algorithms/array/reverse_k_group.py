@@ -11,10 +11,21 @@ class ListNode:
             current_node = current_node.next
         
         return result
+    
+def build_linked_list(list: list):
+    dummy = ListNode(0)
+    current = dummy
+    for item in list:
+        node = ListNode(item)
+        current.next = node
+        current = current.next
+
+    return dummy.next
 
 def reverse_k_group(head: ListNode, k: int):
+    dummy = ListNode(None, head)
     post_window = head
-    pre_window = ListNode(None, head)
+    pre_window = dummy
     end_node = start_node = temp_node = None
     index = 1
 
@@ -26,13 +37,13 @@ def reverse_k_group(head: ListNode, k: int):
             index += 1
 
         if index < k+1:
-            return head
+            return dummy.next
         
         #reverse sliding window
         next_node = start_node.next
         pointer_node = start_node
         while pointer_node != end_node:
-            temp_node = next_node
+            temp_node = next_node #save next and next next to enable traversing the singel linked list 
             next_node = next_node.next
             temp_node.next = pointer_node
             pointer_node = temp_node
@@ -40,23 +51,15 @@ def reverse_k_group(head: ListNode, k: int):
         #reconnect reverse sliding window to linked list
         start_node.next = post_window
         pre_window.next = end_node
-
-        #update head
-        if not pre_window.val:
-            head = pre_window.next
-        
         pre_window = start_node
         index = 1
         
 
-    return head
+    return dummy.next
 
 
 if __name__ == "__main__":
     #create linked list 
-    current_node = None
-    for i in range(5, 0, -1):
-        current_node = ListNode(i, current_node)
+    linked_list = build_linked_list([1,2,3,4,5]) 
     k = 2
-
-    print(reverse_k_group(current_node, k))
+    print(reverse_k_group(linked_list, k))
