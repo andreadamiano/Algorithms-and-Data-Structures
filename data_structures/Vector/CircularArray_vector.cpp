@@ -60,7 +60,7 @@ class CircularArrayVector : public Vector
 CircularArrayVector::~CircularArrayVector()
 {
     for (int i=0; i < capacity; i++)
-        array[(f+1)%capacity].~E(); //calls the object destructor
+        array[(f+i)%capacity].~E(); //calls the object destructor
 
     delete[] array; 
 }
