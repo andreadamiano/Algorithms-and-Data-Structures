@@ -43,7 +43,7 @@ def valid_number(s: str):
             c = 'blank'
         elif c in ['+', '-']:
             c = 'sign'
-        if c.lower() not in state[current_state].keys():
+        if c.lower() not in state[current_state]:
             return False
         
         #update state
