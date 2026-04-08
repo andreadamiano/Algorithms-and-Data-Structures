@@ -65,4 +65,5 @@ if __name__ == "__main__":
     s = "0.."
     s = "0"
     s = "+.8"
+    s = "   +.8"
     print(valid_number(s))
