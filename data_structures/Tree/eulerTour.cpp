@@ -19,8 +19,8 @@ class EulerTour
         int eulerTour (const Tree::Position p) const; //perform the euler tour
         virtual void visitLeft(const Tree::Position& p, Result& r) const {} 
         virtual void visitBelow(const Tree::Position& p, Result& r) const {} 
-        virtual void visitRight(const Tree::Position& p, Result& r) const =0; 
-        virtual void visitExternal(const Tree::Position& p, Result& r) const=0; 
+        virtual void visitRight(const Tree::Position& p, Result& r) const {}
+        virtual void visitExternal(const Tree::Position& p, Result& r) const {}
         Result initResult() const {return Result(); } //return a Result object using the defualt constructor 
         int result(const Result& r) const {return r.finalResult;}
 
@@ -31,7 +31,7 @@ class EulerTour
 };
 
 
-int EulerTour::eulerTour(const Tree::Position p) const
+R EulerTour::eulerTour(const Tree::Position p) const
 {
     Result r = initResult(); 
     if(p.isExternal())
@@ -49,7 +49,7 @@ int EulerTour::eulerTour(const Tree::Position p) const
     return result(r); 
 }
 
-class EvaluateExpressione : public EulerTour
+class EvaluateExpression : public EulerTour
 {
     protected: 
         void visitExternal(const Tree::Position& p, Result& r) const override {r.finalResult = (*p).element; }
@@ -98,7 +98,7 @@ int main ()
     PrintExpression p;
     p.execute(tree);
 
-    EvaluateExpressione e; 
+    EvaluateExpression e; 
     e.execute(tree); 
 
 }
