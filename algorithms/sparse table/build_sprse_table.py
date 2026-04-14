@@ -27,7 +27,7 @@ def find_min(array: list, left: int, right: int):
     So we find the min between 2 overlapping ranges, since we are not sure that there is a power of 2 exatly equals to the range (right - left + 1)
     """
     sparse_table = build_sparse_table(array)
-    k = int(math.log(right - left +1))
+    k = int(math.log2(right - left +1))
     return min(sparse_table[k][left], sparse_table[k][right - (1 << k) + 1]) #find the min between 2 intervals (left to k) (right - 2^k +1 to k) so we are sure to cover the entire range
 
 if __name__ == "__main__":
