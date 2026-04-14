@@ -107,7 +107,8 @@ class Graph
             std::shared_ptr<Node> source; 
             std::shared_ptr<Node> destination; 
             std::list<std::shared_ptr<Edge> > ::iterator position;
-            std::list<std::shared_ptr<Edge> > ::iterator incidencePosition;
+            std::list<std::shared_ptr<Edge> > ::iterator sourceIncidencePosition;     
+            std::list<std::shared_ptr<Edge> > ::iterator destinatIonincidencePosition;     
             int weigth; 
             // Decorator<bool> decorator;  
             Decorator decorator; 
@@ -164,7 +165,8 @@ std::shared_ptr<Graph::Edge> Graph::addEdge(const std::shared_ptr<Graph::Node>& 
     edge->position = std::prev(edges.end()); 
     source->incidentEdges.push_back(edge); 
     destination->incidentEdges.push_back(edge); 
-    edge->incidencePosition = std::prev(source->incidentEdges.end()); 
+    edge->sourceIncidencePosition = std::prev(source->incidentEdges.end()); 
+    edge->destinatIonincidencePosition = std::prev(destination->incidentEdges.end()); 
     edge->decorator.set("visited",  std::make_shared<Bool> (false)); 
     edge->directed = false; 
     return edge; 
@@ -177,7 +179,7 @@ std::shared_ptr<Graph::Edge> Graph::addDirectedEdge(const std::shared_ptr<Graph:
     edges.push_back(edge); 
     edge->position = std::prev(edges.end()); 
     source->incidentEdges.push_back(edge); 
-    edge->incidencePosition = std::prev(source->incidentEdges.end()); 
+    edge->sourceIncidencePosition = std::prev(source->incidentEdges.end()); 
     edge->decorator.set("visited",  std::make_shared<Bool> (false)); 
     edge->directed = true; 
     destination->inDegree++; 
