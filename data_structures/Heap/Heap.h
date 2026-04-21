@@ -75,8 +75,9 @@ void Heap::Merge(int index, int otherindex, std::vector<E>& heap , const std::ve
     if(index >= heap.size() || otherindex >= other.size())
         return; 
     
-    heap[index] = other[otherindex]; 
+    heap[index] = other[otherindex]; //copy the element from the other heap into the current haep
 
+    //recursively copy the left and the right elements 
     Merge(index*2, otherindex*2, heap, other); 
     Merge(index*2+1, otherindex*2+1, heap, other ); 
 }
