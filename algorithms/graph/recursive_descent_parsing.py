@@ -2,21 +2,23 @@ import re
 
 class Parser:
     def __init__(self, json_str):
-        self.cursor = -1
+        self.cursor = 0
         self.json_str = json_str
         self.tokens = self._tokenize()
 
     def consume(self) -> str:
-        self.cursor += 1
         if self.cursor >= len(self.tokens):
             raise Exception("Cannot consume no more tokens")
-        return self.tokens[self.cursor]
+        
+        token = self.tokens[self.cursor]
+        self.cursor += 1
+        return token
 
     def _tokenize(self):
         return [token for token in re.split(r"(\s+|[-+*/=(),])" , json_str) if token.strip()]
 
     def peek(self):
-        return self.tokens[self.cursor+1]
+        return self.tokens[self.cursor]
     
     def _parse_dict(self) -> dict:
         result = dict()
@@ -30,22 +32,21 @@ class Parser:
                 raise Exception("Invalid json format")
 
             next = self.peek()
-
-            #TODO centralize parsing logic , make a multiplexer function
-            if next == "{":
-                value =self._parse_dict()
-            elif next == "[":
-                value = self._parse_list()
-            else:
-                value = self._parse_alphanumeric()
-
-            result[key] = value
+            result[key] = self._parse_value(next)
 
             while self.peek() == ",":
                 self.consume()
 
         self.consume()
         return result
+    
+    def _parse_value(self, value):
+        if value == "{":
+            return self._parse_dict()
+        elif value == "[":
+            return self._parse_list()
+        else:
+            return self._parse_alphanumeric()
 
 
     def _parse_list(self) -> list:
@@ -62,7 +63,7 @@ class Parser:
             return str(current)
         
     def parse(self)-> dict | list | None:
-        token = self.peek()
+        token = self.peek() #clean approach peek to decide which rule to follow 
 
         if token == "{":
             return self._parse_dict()
