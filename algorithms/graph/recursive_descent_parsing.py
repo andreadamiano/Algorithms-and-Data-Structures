@@ -3,8 +3,7 @@ import re
 class Parser:
     def __init__(self, json_str):
         self.cursor = 0
-        self.json_str = json_str
-        self.tokens = self._tokenize()
+        self.tokens = self._tokenize(json_str)
 
     def consume(self) -> str:
         if self.cursor >= len(self.tokens):
@@ -14,7 +13,7 @@ class Parser:
         self.cursor += 1
         return token
 
-    def _tokenize(self):
+    def _tokenize(self, json_str):
         return [token for token in re.split(r"(\s+|[-+*/=(),])" , json_str) if token.strip()]
 
     def peek(self):
@@ -72,24 +71,4 @@ class Parser:
             return self._parse_list()
         else:
             raise Exception("Invalid json format")
-
-
-
-
-
-if __name__  == "__main__":
-    json_str = """
-    {
-        'key1' : 'Andrea', 
-        'key2' : {
-            'key1' : 1,
-            'key2' : 2,
-        }
-        'key3' : 'Janelle',
-    }
-    """
-    parser = Parser(json_str)
-    result = parser.parse()
-
-    print(result)
 
