@@ -161,11 +161,3 @@ if __name__ == "__main__":
     print(Parser('+ 1 + 2').parse())
     print(Parser('+ a + 22').parse())
     print(Parser('1 - 2 - 3').parse())
-
-    # for extra interactive testing
-    while True:
-        try:
-            line = input()
-            print(Parser(line).parse())
-        except (KeyboardInterrupt, EOFError):
-            break
