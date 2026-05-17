@@ -87,4 +87,4 @@ if __name__ == "__main__":
     graph.add_rule(Rule(State.START, "Q1", "1", "0", None))
     graph.add_rule(Rule("Q1", "Q1", "1", "0", None))
     graph.add_rule(Rule("Q1", State.END, None, "$", None))
-    print(graph.match("000111")) 
+    print(graph.match("0000111")) 
