@@ -49,7 +49,7 @@ class NFA:
             if not active_states:
                 return False
 
-            next_states = set() #create a new set to avoid iterating and motifying the same set (which will result in undefined behaviour)
+            next_states = set() #create a new set to avoid iterating and modifying the same set (which will result in undefined behaviour)
 
             #match all possible rules
             for state in active_states:
@@ -64,7 +64,6 @@ class NFA:
         return any(state == State.END for state in active_states) #if there exists either one state which is the end state the patter match
 
          
-
 if __name__ == "__main__":
     graph = NFA()
     graph.add_rule(Rule(State.START, State.START)) #epsilon transition
@@ -73,10 +72,8 @@ if __name__ == "__main__":
     graph.add_rule(Rule("Q1", "Q2", "1"))
     graph.add_rule(Rule("Q2", State.END, "1"))
     graph.add_rule(Rule("Q2", State.END, "0"))
+
     print(graph.match("000000100"))
 
-    # while True:
-    #     string = input()
-    #     print(graph.match(string))
 
 

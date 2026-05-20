@@ -1,17 +1,8 @@
-# from itertools import combinations
-
 def notIn(node, subset):
     """
     This function check if the node is part of the bit map
     """
     return ((subset >> node) & 1) == 0
-
-# def combination(iterable, k):
-    # for subset in combinations(iterable, k):
-    #     bitmask = 0
-    #     for node in subset:
-    #         bitmask  |= (1 << node)
-    #     yield bitmask
 
 def combination(N, k):
     """
@@ -28,8 +19,7 @@ def combinations(set, at, N, k, subsets: list):
     for i in range(at, N):
         set |= (1 << i)
         combinations(set, i+1, N, k-1, subsets)
-        #backtracking
-        set ^= (1 << i)
+        set ^= (1 << i) #backtracking
 
 def setup(graph, memo, S, N):
     """
@@ -39,9 +29,8 @@ def setup(graph, memo, S, N):
     the base case is the cost of reaching the nodes directly accessible from S
     """
     for i in range(N):
-        # if i == S:
-        #     continue
-        #set the subpath of the starting node and the next node to the weight of the edge
+
+        #asign to the subset of the starting node and the next node the weight of the edge connecting them 
         memo[(1 << S) | (1 << i)][i] = graph[S][i]
 
 def solve(graph, memo, S, N):
@@ -74,10 +63,8 @@ def solve(graph, memo, S, N):
                 for endNode in range(N):
                     if endNode == S  or notIn(endNode, state) :
                         continue
-                    newDistance = memo[state][endNode] + graph[endNode][next]
 
-                    if newDistance < minDistance:
-                        minDistance = newDistance
+                    minDistance = min(memo[state][endNode] + graph[endNode][next], minDistance)
 
                 #save the result in the memo table
                 memo[subset][next] = minDistance

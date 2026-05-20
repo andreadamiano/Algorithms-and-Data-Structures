@@ -45,12 +45,13 @@ class PDA:
                     if not rule.matcher:
                         top = current_stack[-1] if current_stack else None
                         if not rule.pop or rule.pop == top: #check if the top of the stack matches the expected pop 
-
+                            
+                            #change the stack according to the rule
                             new_stack = list(current_stack)
                             if rule.pop: new_stack.pop()
                             if rule.push: new_stack.append(rule.push)
 
-                            new_state = (rule.destination, tuple(new_stack))
+                            new_state = (rule.destination, tuple(new_stack)) #convert the stack to a tuple to make it immutable
                             if new_state not in current_states:
                                 current_states.add(new_state)
                                 stack.append(new_state)
@@ -87,4 +88,5 @@ if __name__ == "__main__":
     graph.add_rule(Rule(State.START, "Q1", "1", "0", None))
     graph.add_rule(Rule("Q1", "Q1", "1", "0", None))
     graph.add_rule(Rule("Q1", State.END, None, "$", None))
+
     print(graph.match("0000111")) 
