@@ -8,7 +8,7 @@ def max_students(seats: list[list]):
     n = len(seats[0])
     validity = []
 
-    #encode  each valid position inside a bitmasks 
+    #encode each valid position inside a bitmasks 
     for i in range(m):
         bitmask = 0
         for j in range(n):
@@ -21,7 +21,7 @@ def max_students(seats: list[list]):
 
     for i in range(1, m + 1): 
         row_mask = validity[i-1] #intial bitmask for that row containing all valid positions
-        for j in range(1 << n): #brute forcely generate j, which represent a random bitmask to validate generated
+        for j in range(1 << n): #brute forcely generate j, which represent a random bitmask to validate 
             if (j & row_mask) == j and not (j & (j >> 1)):#check that each student is placed in a valid seat and there are no adjacent students
                 cnt = bin(j).count('1') #count all 1 inside the bitmask s
                 for k in range(1 << n): #brute forcely generate k, which represent a random bitmask that represent the disposition of the students in the previous row 
