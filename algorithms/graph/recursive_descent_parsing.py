@@ -62,7 +62,7 @@ class Parser:
             return str(current)
         
     def parse(self)-> dict | list | None:
-        token = self.peek() #clean approach peek to decide which rule to follow 
+        token = self.peek() #peek to decide which rule to follow 
 
         if token == "{":
             return self._parse_dict()
