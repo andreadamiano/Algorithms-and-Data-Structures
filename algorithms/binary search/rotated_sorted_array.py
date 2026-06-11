@@ -17,7 +17,7 @@ def search(nums: list, target: int):
                 return bin_search(nums, target, mid+1, end) 
             
         else:
-            if nums[mid] <= target <= nums[end]:
+            if nums[mid] <= target <= nums[end]:    
                 return bin_search(nums, target, mid+1, end)
             else:
                 return bin_search(nums, target, start, mid-1) 
