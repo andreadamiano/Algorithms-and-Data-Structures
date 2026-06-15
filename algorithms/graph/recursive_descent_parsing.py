@@ -72,3 +72,14 @@ class Parser:
         else:
             raise Exception("Invalid json format")
 
+
+if __name__ == "__main__":
+    json_str = """
+    {
+        "chiave" : valore;
+    }
+    """
+
+    parser = Parser(json_str)
+    result = parser.parse()
+    print(result)

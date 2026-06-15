@@ -46,10 +46,6 @@ class Token:
         return f"Token(value={self.value}, type={self.type})"
 
 
-def tokenize(text):
-    return [Token(x) for x in re.split(r"(\s+|[-+*/=()])", text) if x.strip()]
-
-
 
 class PrattParser:
     """
@@ -59,9 +55,12 @@ class PrattParser:
     tokens: list
 
     def __init__(self, input_text):
-        self.tokens = tokenize(input_text)
+        self.tokens = self.tokenize(input_text)
         self.prefix_parselets = {}
         self.infix_parselets = {}
+
+    def tokenize(text):
+        return [Token(x) for x in re.split(r"(\s+|[-+*/=()])", text) if x.strip()]
 
     def parse(self, precedence=0):
         cur_token = self.tokens.pop(0)

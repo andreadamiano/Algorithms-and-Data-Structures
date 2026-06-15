@@ -46,7 +46,7 @@ class NFA:
 
         for char in input: #consume one character at a time
 
-            if not active_states:
+            if not active_states: #prune early
                 return False
 
             next_states = set() #create a new set to avoid iterating and modifying the same set (which will result in undefined behaviour)
