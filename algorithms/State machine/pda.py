@@ -21,7 +21,7 @@ class Rule:
 
 class PDA:
     """
-    In a PDA in order to transition to the next state 3 conditions must be mathced:7
+    In a PDA in order to transition to the next state 3 conditions must be mathced:
     1) The current state must match the rule's source
     2) The input character must match the rules's matcher
     3) The top of the stack must match the rule's pop 
@@ -64,6 +64,9 @@ class PDA:
 
         for char in input: #consume a character 
             next_states = set() #create a new set to avoid modifying the set while iterating over it  
+
+            if not active_states:
+                return False
 
             for current_state, current_stack in active_states:
                 if current_state in self.adjency_dict:
