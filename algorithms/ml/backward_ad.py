@@ -82,7 +82,7 @@ class Node:
         print(f"Computed graph: {graph}")   
         
         #visit each node in the computed topological order (reversed) and accumulate gradients
-        self.grad = 1.0 #initialize the gradient of the last node of the computational graph  
+        self.grad = 1.0 #initialize the gradient of the last node of the computational graph  (seeding  )
         for node in reversed(graph):
             node: Node
             print(node)
