@@ -86,9 +86,6 @@ class MultivariateLinearRegressor:
         return (1 / (2 * len(y))) * np.sum((y - predictions) ** 2)
 
     def predict(self, X):
-        #if the input doesn't have the bias column yet, add it
-        if X.shape[1] == self.weights.shape[0] - 1:
-            X = self._add_bias(X)
         return np.dot(X, self.weights)
     
     def train(self, X: np, y):
@@ -97,25 +94,26 @@ class MultivariateLinearRegressor:
         
         #random intialize the weights vector (num_features + 1 for the bias)
         self.weights = np.random.randn(num_features + 1, 1) * 0.01
-        
         prev_mse = float("inf")
         
         for i in range(self.max_iter):
-            y_hat = np.dot(X_with_bias, self.weights)
-            current_mse = self.mse(y, y_hat)
+
+            #forward pass 
+            predictions = self.predict(X_with_bias)
+
+            #compute cost function
+            current_mse = self.mse(y, predictions)
 
             if current_mse / prev_mse > 0.9999:
                 break 
 
-            #compute the gradient of the mse with respect to the weights vector
-            dweights = np.dot(X_with_bias.T, (y_hat - y)) / n
+            #compute the gradient of cost function
+            dweights = np.dot(X_with_bias.T, (predictions - y)) / n
 
             #update the weights vector in the direction of the computed gradient 
             self.weights -= self.alpha * dweights
 
-            #log current iteration
             print(f"Iteration: {i}, MSE: {current_mse}")
-
             prev_mse = current_mse
             
 
