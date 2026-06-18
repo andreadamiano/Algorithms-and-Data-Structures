@@ -33,33 +33,34 @@ def solve(board: list) -> None:
     rows, cols, boxes, empty_cells = preprocess(board)
 
     def solve_sudoku(board: list) -> bool:
+        if not empty_cells:
+            return True
 
-        for i in empty_cells:
-            y = i // 9
-            x = i % 9
-            box_index = ((i % 9) // 3) + (i // 27) * 3
+        cell_index = empty_cells.pop()
+        y = cell_index // 9
+        x = cell_index % 9
+        box_index = ((cell_index % 9) // 3) + (cell_index // 27) * 3
 
-            if board[y][x] == ".":
-                
-                #try to insert a number between 1 and 9
-                for number in "123456789":
-                    if number not in cols[x] and number not in rows[y] and number not in boxes[box_index]:
-                        board[y][x] = number
-                        rows[y].add(number)
-                        cols[x].add(number)
-                        boxes[box_index].add(number)
-                        empty_cells.remove(i)
-                        if solve_sudoku(board):
-                            return True
-                        
-                        #backtracking
-                        board[y][x] = "."
-                        rows[y].remove(number)
-                        cols[x].remove(number)
-                        boxes[box_index].remove(number)
-                        empty_cells.add(i)
+        if board[y][x] == ".":
+            
+            #try to insert a number between 1 and 9 inside the current empty cell
+            for number in "123456789":
+                if number not in cols[x] and number not in rows[y] and number not in boxes[box_index]:
+                    board[y][x] = number
+                    rows[y].add(number)
+                    cols[x].add(number)
+                    boxes[box_index].add(number)
 
-                return False
+                    if solve_sudoku(board):
+                        return True
+                    
+                    #backtracking
+                    board[y][x] = "."
+                    rows[y].remove(number)
+                    cols[x].remove(number)
+                    boxes[box_index].remove(number)
+
+            return False
 
         return True
     
