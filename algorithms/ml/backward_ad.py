@@ -19,7 +19,7 @@ class Node:
             ## dout/da: the local gradient, where out = (a + b) -> d(a + b)/da = 1 (how much the output of the current node changes if we change the input)
             ## L represent the loss function (which is compose of many smaller functions bulding the compotuational grapph)
             ## out is the output of the current node 
-            self.grad += 1.0 * out.grad # accumulate gradients 
+            self.grad += 1.0 * out.grad #out.grad represent the downstream accumulated gradient
             other.grad += 1.0 * out.grad
 
         out._backward =_backward
@@ -56,8 +56,8 @@ class Node:
             ## dout/da: the local gradient of ReLU
             ## 
             ## For ReLU: 
-            ##   if a > 0: out = a → dout/da = 1
-            ##   if a <= 0: out = 0 → dout/da = 0
+            ##   if a > 0: out = a -> dout/da = 1
+            ##   if a <= 0: out = 0 -> dout/da = 0
             self.grad += (out.data > 0) * out.grad  # Use += to accumulate gradients
 
         out._backward = _backward
