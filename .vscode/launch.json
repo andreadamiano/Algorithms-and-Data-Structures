@@ -1,17 +1,18 @@
 {
   "configurations": [
     {
-      "name": "C/C++: gcc.exe build and debug active file",
+      "name": "C/C++: build and debug active file",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${fileDirname}/rooster.exe",
+      "program": "${fileDirname}/${fileBasenameNoExtension}",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],
       "externalConsole": false,
       "MIMode": "gdb",
-      "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
+      // "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
+      "miDebuggerPath": "/usr/bin/gdb",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
@@ -19,7 +20,7 @@
           "ignoreFailures": true
         }
       ],
-      "preLaunchTask": "Build with g++ compiler 14.2.0"
+      "preLaunchTask": "Build with g++ compiler 14.2.0 (Linux)"
     },
     {
       "name": "Python: Current File",
