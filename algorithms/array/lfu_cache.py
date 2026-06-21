@@ -34,7 +34,10 @@ class OrderedDict:
         node.next = self.tail
         self.tail.prev = node
         self.elements += 1
-
+    
+    def empty(self):
+        return len(self.dict) == 0
+    
     def pop(self):
         if self.empty():
             return None
@@ -49,13 +52,13 @@ class OrderedDict:
         return top
 
     def pop_key(self, key):
-        return self._remove_node(self.dict[key])
-
-    def empty(self):
-        return len(self.dict) == 0
+        return self._remove_node(self.dict[key]).value
 
     def top(self):
         return self.head.next if not self.empty() else None
+    
+    def get(self, key):
+        return self.dict[key]
     
     def put(self, key, value):
         if key in self.dict:
@@ -70,59 +73,44 @@ class LFUCache:
     def __init__(self, capacity: int):
         self.capacity = capacity
         self.use_counter = defaultdict(int)
-        self.cache = defaultdict(OrderedDict)  #this will store a sorted-dict of frequencies containing a OrderedDict of key-value pair 
-        self.head = Node(0, 0)
-        self.tail = Node(0, 0)
-        self.head.next = self.tail
-        self.tail.prev = self.head
+        self.cache = defaultdict(OrderedDict)  #this will store frequencies associates with an OrderedDict object that will keep track of the order of insertion of new items
+        self.min_frequency = 0
+
+    def _update_min_frequency(self, key_frequency):
+        if key_frequency < self.min_frequency:
+            self.min_frequency = key_frequency
+
+        elif key_frequency == self.min_frequency and self.cache[self.min_frequency].empty():
+            self.min_frequency += 1
 
     def empty(self):
         return len(self.cache) == 0
-    
-    def _append(self, node: Node):
-        self.tail.prev.next = node
-        node.prev = self.tail.prev
-        node.next = self.tail
-        self.tail.prev = node
-        
-    
-    def _remove_node(self, node: OrderedDict):
-        pass
-
-    def _top(self):
-        return self.head.next if not self.empty() else None
-    
-    def _pop(self):
-        if self.empty():
-            return None
-        
-        top: OrderedDict = self.head.next
-
-        if len(top) > 0: #if there are more then one element that have the least frequency remove the least recent one
-            return top.pop()
-
-        self.head.next = top.next
-        top.next.prev = self.head
-        top.next = None
-        top.prev = None
-        self.cache[top.top().key] = None #delete the OrderDict from the cache
-        return top
 
     def get(self, key: int):
-        node = self.cache[self.use_counter[key]].pop_key(key)
+        #when a value is retrieved mode it from a frequency slot to another incremented frequency slot
+        key_frequency = self.use_counter[key]
+        value = self.cache[key_frequency].pop_key(key)
         self.use_counter[key] += 1
-        (ordered_dict := self.cache[self.use_counter[key]]).put(node.key, node.value)
-        self._append(ordered_dict)
-        return node
+        self.cache[key_frequency+1].put(key, value)
+
+        #check if it was the least frequent item and if that slot is empty (in order to update the min frequency value)
+        self._update_min_frequency(key_frequency+1)
+
+        return value
 
     def put(self, key: int, value: int):
+        if self.capacity == 0:
+            return
 
         if key in self.cache or len(self.cache) + 1 >= self.capacity:  #if the key is already present or there are no more slots , remove the key from its current slot
-            self._pop()  # pop the least frequent node
+            self.cache[self.use_counter[self.min_frequency]].pop()  # pop the least frequent node
 
         self.use_counter[key] += 1
-        (ordered_dict := self.cache[self.use_counter[key]]).put(key, value)
-        self._append(ordered_dict)
+        key_frequency = self.use_counter[key]
+        self.cache[key_frequency].put(key, value)
+
+        #check if it was the least frequent item and if that slot is empty (in order to update the min frequency value)
+        self._update_min_frequency(key_frequency)
 
 
 
