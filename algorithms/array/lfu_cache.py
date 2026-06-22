@@ -87,7 +87,7 @@ class LFUCache:
         return len(self.cache) == 0
 
     def get(self, key: int):
-        #when a value is retrieved mode it from a frequency slot to another incremented frequency slot
+        #when a value is retrieved move it from a frequency slot to another incremented frequency slot
         key_frequency = self.use_counter[key]
         value = self.cache[key_frequency].pop_key(key)
         self.use_counter[key] += 1
