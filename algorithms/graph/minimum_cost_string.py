@@ -1,11 +1,11 @@
 
-def minimumCost(source, target, original, changed, cost):
+def minimum_cost(source, target, original, changed, cost):
     INF = 10**30
     id = {}
     lens = set()
     incremental_id = 0
 
-    dist = [[INF]*201 for _ in range(201)]
+    dist = [[INF]*201 for _ in range(201)] #edge matrix
 
     #assign an id to every node (which is actually a string)
     for s, t, c in zip(original, changed, cost):
@@ -16,14 +16,14 @@ def minimumCost(source, target, original, changed, cost):
         if t not in id:
             id[t] = incremental_id
             incremental_id += 1
-        dist[id[s]][id[t]] = min(dist[id[s]][id[t]], c)
+        dist[id[s]][id[t]] = min(dist[id[s]][id[t]], c) #add an edge between the 2 source node and the destination node
 
-    #initialize the dp table of the floyd wharshall algorithm
+    #initialize the dp table 
     for i in range(incremental_id):
         dist[i][i] = 0
 
-    #compute the shortest path of each node to each node 
-    for k in range(incremental_id):
+    #compute the shortest path of each node to each node (floyd-warshall algorithm)
+    for k in range(incremental_id): #the idea is to check if the current node could be used as a "stpping stone" to help a node reach another node
         for i in range(incremental_id):
             if dist[i][k] < INF:
                 for j in range(incremental_id):
@@ -32,7 +32,7 @@ def minimumCost(source, target, original, changed, cost):
 
     n = len(source)
     dp = [INF] * (n + 1)
-    dp[0] = 0  #represent the cost to convert source[:i] to target[:i]
+    dp[0] = 0  #dp[i] represent the cost to convert source[:i] to target[:i]
 
     for i in range(n):
         if dp[i] == INF:  #current node cannot be accessed, since the distance is infite
@@ -59,4 +59,4 @@ if __name__ == "__main__":
     original = ["bcd","fgh","thh"]
     changed = ["cde","thh","ghh"] 
     cost = [1,3,5]
-    print(minimumCost(source, target, original, changed, cost))
+    print(minimum_cost(source, target, original, changed, cost))

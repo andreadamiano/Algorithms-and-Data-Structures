@@ -1,10 +1,11 @@
 import numpy as np
 
 class Tensor:
-    def __init__(self, data):
+    def __init__(self, data, requires_grad = True):
         self.data = np.array(data) #wrap data into numpy objects 
         self.shape = self.data.shape
         self.size = self.data.size
+        self.requires_grad = requires_grad
 
     def __add__(self, other):
         """
@@ -69,6 +70,16 @@ class Tensor:
         result = np.mean(self.data, axis=axis, keepdims=keepdims)
         return Tensor(result)
     
+    def __truediv__(self, other: "Tensor"):
+        if isinstance(other, "Tensor"):
+            return Tensor(self.data / other.data)
+        raise Exception(f"Division between {type(self)} and {type(other)} not supported.")
+    
+    def __mul__(self, other):
+        if isinstance(other, "Tensor"):
+            return Tensor(self.data * other.data)
+        raise Exception(f"Multiplication between {type(self)} and {type(other)} not supported.")
+    
     @property
     def T(self):
         result = self.data.T
@@ -78,6 +89,9 @@ class Tensor:
          
 
 if __name__ == "__main__":
+    import sys
+    print(sys.path[0])
+
     #test broadcasting operations
     x = Tensor([[1, 2, 3],[4,5,6]])
     y = Tensor([1,2,3])
