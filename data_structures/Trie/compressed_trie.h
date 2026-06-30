@@ -112,12 +112,6 @@ void CompressedTrie::insert(const std::string& word)
             std::string remainingExisting = characters.substr(i);
             std::string remainingNew = word.substr(pos + i);
 
-            // std::string_view label = std::string_view(characters);                       
-            // std::string_view commonPrefix = label.substr(0, i);                     
-            // std::string_view remainingExisting = label.substr(i);                   
-            // std::string_view remainingNew = std::string_view(word).substr(pos + i);
-
-
             child->characters = commonPrefix; //update the child node to contain only the partial match
 
             if (!remainingExisting.empty())
