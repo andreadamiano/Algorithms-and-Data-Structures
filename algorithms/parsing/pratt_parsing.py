@@ -18,7 +18,7 @@ class Token:
     def __init__(self, value):
         if not value:
             raise ValueError("Token value cannot be empty")
-        self.value = value
+        self.value: str = value
         self.type = self._get_type()
 
     def _get_type(self):
@@ -49,10 +49,9 @@ class Token:
 
 class PrattParser:
     """
-    Parser implementing top-down operator precedence parsing, also known as
-    Pratt parsing.
+    Parser implementing top-down operator precedence parsing, also known as Pratt parsing.
     """
-    tokens: list
+    tokens: list[Token]
 
     def __init__(self, input_text):
         self.tokens = self.tokenize(input_text)
