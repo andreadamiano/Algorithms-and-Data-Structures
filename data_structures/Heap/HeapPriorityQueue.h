@@ -7,7 +7,7 @@ template <typename E, typename C>
 class PriorityQueue
 {
     private:
-        Heap h; 
+        Heap h; //complete binary tree
         C isLess; //comparator 
 
     public:

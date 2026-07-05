@@ -97,7 +97,7 @@ void Compression::Huffman(const std::string& text)
     }
 
 
-    //construct binary tree 
+    //construct binary tree (while destructing the minHeap)
     while (pq.size() > 1)
     {
         Node* left = pq.top(); 
