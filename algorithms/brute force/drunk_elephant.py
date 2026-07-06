@@ -17,7 +17,7 @@ def arrest_elephants(m, k, tests):
                     max_num += 1
                 
 
-            if max_num >= m:
+            if max_num >= m: #invalidate the currente window
                 break
         
         if max_num < m:
