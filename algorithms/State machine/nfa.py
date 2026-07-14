@@ -35,7 +35,7 @@ class NFA:
                 for rule in self.adjency_dict[current_state]:
                     if not rule.matcher and rule.destination not in current_states:
                         current_states.add(rule.destination)
-                        stack.append(current_state)
+                        stack.append(rule.destination)
 
         return current_states
         
@@ -55,6 +55,11 @@ class NFA:
             for state in active_states:
                 if state in self.adjency_dict:
                     for rule in self.adjency_dict[state]:
+
+                        #epsilon rules dont consume input
+                        if rule.matcher is None:
+                            continue
+
                         if rule._transition(char) != State.DEAD:
                             next_states.add(rule.destination)
 

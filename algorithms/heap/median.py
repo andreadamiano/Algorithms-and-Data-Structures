@@ -8,9 +8,9 @@ class MedianFinder:
 
     def addNum(self, num: int) -> None:
         if self.large and num > self.large[0]:
-            heapq.heappush(self.large, num)
+            heapq.heappush(self.large, num) #minheap
         else:
-            heapq.heappush(self.small, -1 * num)
+            heapq.heappush(self.small, -1 * num) #maxheap
 
         if len(self.small) > len(self.large) + 1:
             val = -1 * heapq.heappop(self.small)
@@ -33,4 +33,4 @@ if __name__ == "__main__":
     for num in nums:
         median.addNum(num)
 
-    median.findMedian()
+    print(median.findMedian())

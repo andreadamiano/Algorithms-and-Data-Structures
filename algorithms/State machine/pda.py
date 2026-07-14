@@ -71,6 +71,11 @@ class PDA:
             for current_state, current_stack in active_states:
                 if current_state in self.adjency_dict:
                     for rule in self.adjency_dict[current_state]: #find a matching rule to transition to the next state
+                        
+                        #epsilon rules dont consume input
+                        if rule.matcher is None:
+                            continue
+
                         top = current_stack[-1] if current_stack else None
                         if rule._transition(char, top) != State.DEAD:
                             new_stack = list(current_stack)
@@ -92,4 +97,4 @@ if __name__ == "__main__":
     graph.add_rule(Rule("Q1", "Q1", "1", "0", None))
     graph.add_rule(Rule("Q1", State.END, None, "$", None))
 
-    print(graph.match("0000111")) 
+    print(graph.match("000111")) 

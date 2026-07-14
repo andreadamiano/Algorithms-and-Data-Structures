@@ -31,6 +31,9 @@ def update_distance_vector(neighbor_node: str, distance_vector: dict):
         elif current_distance_vector[destination][1] == neighbor_node: #if an update arrives from the current gateway we must accept it
             current_distance_vector[destination] = [cost, neighbor_node]
 
+        elif distance_vector[destination][1] == "A":
+            continue #never accept a route that involves the current node as a gateway (to avoid the split horizon issue)
+
         elif current_distance_vector[destination][0] > cost: #perform relaxation (brute force distrubuted approach)
             current_distance_vector[destination] = [cost, neighbor_node]
 

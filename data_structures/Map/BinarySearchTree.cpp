@@ -8,20 +8,20 @@ template <typename C>
 class Map
 {
     private:
-            struct Elem
-            {
-                int key; 
-                E value; 
-            };
-            struct Node
-            {
-                Node* right; 
-                Node* left; 
-                Node* parent; 
-                Elem elem; 
+        struct Elem
+        {
+            int key; 
+            E value; 
+        };
+        struct Node
+        {
+            Node* right; 
+            Node* left; 
+            Node* parent; 
+            Elem elem; 
 
-                Node(const Elem _elem, Node* _parent) : elem(_elem), parent(_parent), right(nullptr), left(nullptr) {}
-            }; 
+            Node(const Elem _elem, Node* _parent) : elem(_elem), parent(_parent), right(nullptr), left(nullptr) {}
+        }; 
 
         C isLess; 
         int n;  
