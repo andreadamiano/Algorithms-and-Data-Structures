@@ -106,9 +106,13 @@ class LFUCache:
         if self.capacity == 0:
             return
 
-        if key in self.cache or len(self.cache) + 1 >= self.capacity:  #if the key is already present or there are no more slots , remove the key from its current slot
-            value_pop = self.cache[self.use_counter[self.min_frequency]].pop()  # pop the least frequent node
+        if len(self.cache) + 1 >= self.capacity:  #if there are no more slots remove the least frequent key
+            value_pop = self.cache[self.min_frequency].pop()  
             self.use_counter.pop(value_pop)
+
+        if key in self.cache:
+            key_frequency = self.use_counter[key]
+            self.cache[key_frequency].pop_key(key)
 
         self.use_counter[key] += 1
         key_frequency = self.use_counter[key]
