@@ -59,7 +59,7 @@ class PDA:
         return current_states
 
     def match(self, input):
-        initial_stack = ("$",)  #mark the top of the stack with a placeholder
+        initial_stack = ()  #mark the top of the stack with a placeholder
         active_states = self._get_epsilon_closure({(State.START, initial_stack)})
 
         for char in input: #consume a character 
@@ -92,9 +92,10 @@ class PDA:
 
 if __name__ == "__main__":
     graph = PDA()
-    graph.add_rule(Rule(State.START, State.START, "0", None, "0")) 
-    graph.add_rule(Rule(State.START, "Q1", "1", "0", None))
-    graph.add_rule(Rule("Q1", "Q1", "1", "0", None))
-    graph.add_rule(Rule("Q1", State.END, None, "$", None))
+    graph.add_rule(Rule(State.START, "Q1", None, None, "$")) 
+    graph.add_rule(Rule("Q1", "Q1", "0", None, "0")) 
+    graph.add_rule(Rule("Q1", "Q2", "1", "0", None))
+    graph.add_rule(Rule("Q2", "Q2", "1", "0", None))
+    graph.add_rule(Rule("Q2", State.END, None, "$", None))
 
     print(graph.match("000111")) 
