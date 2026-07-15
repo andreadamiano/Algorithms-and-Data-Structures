@@ -36,7 +36,7 @@ class OrderedDict:
         self.elements += 1
     
     def empty(self):
-        return len(self.dict) == 0
+        return self.elements == 0
     
     def pop(self):
         if self.empty():
@@ -49,7 +49,7 @@ class OrderedDict:
         top.prev = None
         self.dict[top.key] = None
         self.elements -= 1
-        return top
+        return top.value
 
     def pop_key(self, key):
         return self._remove_node(self.dict[key]).value
@@ -72,14 +72,15 @@ class LFUCache:
 
     def __init__(self, capacity: int):
         self.capacity = capacity
-        self.use_counter = defaultdict(int)
-        self.cache = defaultdict(OrderedDict)  #this will store frequencies associates with an OrderedDict object that will keep track of the order of insertion of new items
-        self.min_frequency = 0
+        self.use_counter = defaultdict(int) #maps keys to their frequencies
+        self.cache = defaultdict(OrderedDict)  #maps frequencies with an OrderedDict object, which will keep track of the order of insertion of the items of the same frequency
+        self.min_frequency = float("inf")
 
     def _update_min_frequency(self, key_frequency):
         if key_frequency < self.min_frequency:
             self.min_frequency = key_frequency
 
+        #if the min frequency bin is empty increase the min frequency
         elif key_frequency == self.min_frequency and self.cache[self.min_frequency].empty():
             self.min_frequency += 1
 
@@ -87,6 +88,9 @@ class LFUCache:
         return len(self.cache) == 0
 
     def get(self, key: int):
+        if key not in self.use_counter:
+            return 
+
         #when a value is retrieved move it from a frequency slot to another incremented frequency slot
         key_frequency = self.use_counter[key]
         value = self.cache[key_frequency].pop_key(key)
@@ -94,7 +98,7 @@ class LFUCache:
         self.cache[key_frequency+1].put(key, value)
 
         #check if it was the least frequent item and if that slot is empty (in order to update the min frequency value)
-        self._update_min_frequency(key_frequency+1)
+        self._update_min_frequency(key_frequency)
 
         return value
 
@@ -103,7 +107,8 @@ class LFUCache:
             return
 
         if key in self.cache or len(self.cache) + 1 >= self.capacity:  #if the key is already present or there are no more slots , remove the key from its current slot
-            self.cache[self.use_counter[self.min_frequency]].pop()  # pop the least frequent node
+            value_pop = self.cache[self.use_counter[self.min_frequency]].pop()  # pop the least frequent node
+            self.use_counter.pop(value_pop)
 
         self.use_counter[key] += 1
         key_frequency = self.use_counter[key]
@@ -119,5 +124,16 @@ if __name__ == "__main__":
     lru.put(1, 1)
     lru.put(2, 2)
     lru.put(3,3)
+
     lru.get(1)
+    lru.get(2)
+    lru.get(3)
+
+    # this should remove 1 
     lru.put(4, 4)
+
+    #test
+    print(f"Value of key 1: {lru.get(1)}")
+    print(f"Value of key 2: {lru.get(2)}")
+    print(f"Value of key 3: {lru.get(3)}")
+    print(f"Value of key 4: {lru.get(4)}")
