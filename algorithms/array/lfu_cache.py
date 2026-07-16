@@ -105,14 +105,14 @@ class LFUCache:
     def put(self, key: int, value: int):
         if self.capacity == 0:
             return
-
-        if len(self.cache) + 1 >= self.capacity:  #if there are no more slots remove the least frequent key
-            value_pop = self.cache[self.min_frequency].pop()  
-            self.use_counter.pop(value_pop)
-
-        if key in self.cache:
+        
+        if key in self.use_counter:
             key_frequency = self.use_counter[key]
             self.cache[key_frequency].pop_key(key)
+
+        elif len(self.cache) + 1 >= self.capacity:  #if there are no more slots remove the least frequent key
+            value_pop = self.cache[self.min_frequency].pop()  
+            self.use_counter.pop(value_pop)
 
         self.use_counter[key] += 1
         key_frequency = self.use_counter[key]
