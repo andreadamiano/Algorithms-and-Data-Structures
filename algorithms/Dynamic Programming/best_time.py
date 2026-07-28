@@ -1,18 +1,18 @@
 def max_profit(k: int, prices: list):
     n = len(prices)
-    # at each day i can either but or sell a stock 
+    #at each day i can either buy or sell a stock 
 
-    # if the number of k is more then half the len of stock prices adopt a greedy approach by making every possible profitable trade  
+    #if the number of k is more then half the len of stock prices adopt a greedy approach by making every possible profitable trade  
     if k >= len(prices) // 2:
         return sum(max(0, prices[i] - prices[i-1]) for i in range(1, len(prices)))
 
-    # removed the time variable to reduce space complexity  
-    # every state depends on the precious time (t-1) state, so it's sufficient to update the dp value in place 
-    buy = [-float('inf')] * (k + 1)  # represent the max number of money you can have on day i after making j transactions and currently holding a stock
-    sell= [0] * (k+1) # represent the max umber of money you can have on day i after making j transactions and currently not holding a stock
+    #removed the time variable to reduce space complexity  
+    #every state depends on the previous time (t-1) state, so it's sufficient to update the dp value in place 
+    buy = [-float('inf')] * (k + 1)  #buy[i] represent the max number of money you can have after making i transactions and currently holding a stock
+    sell= [0] * (k+1) #sell[i] represent the max number of money you can have after making i transactions and currently not holding a stock
 
-    for price in prices:
-        for j in range(1, k + 1):
+    for price in prices: #consume the daily price
+        for j in range(1, k + 1): #consume a trade
             buy[j] = max(buy[j], sell[j-1] - price) # max capital holding the stock 
             sell[j] = max(sell[j], buy[j] + price) # max capital without holding the stock
 
@@ -27,11 +27,11 @@ def max_profit(k: int, prices: list):
     if n == 0 or k == 0:
         return 0
     
-    # 3d dp array, since i have to keep track of 3 variables at each step:
-    # whats the day 
-    # how many transaction have i used
-    # am i currently holding a stock
-    # at each state we store the maximum profit
+    #3d dp array, since i have to keep track of 3 variables at each step:
+    #- whats the day 
+    #- how many transaction have i used
+    #- am i currently holding a stock
+    #at each state we store the maximum profit
     dp = [[[0, 0] for _ in range(k + 1)] for _ in range(n)]
 
     # initialize first day 
@@ -40,8 +40,10 @@ def max_profit(k: int, prices: list):
         dp[0][j][1] = -prices[0]
 
 
+    #consume a day 
     for i in range(1, n):
-        for j in range(1, k + 1):
+        max_trades = min(k, (i+1)//2) #at day i we can have at most i/2 trades
+        for j in range(1, max_trades + 1): #consume a trade
             # STATE: NOT HOLDING STOCK
             # Either we didn't have it yesterday, 
             # OR we had it and we are selling it today.
