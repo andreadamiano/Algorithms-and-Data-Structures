@@ -41,5 +41,8 @@ if __name__ == "__main__":
     # dungeon = [[100]]
     # dungeon = [[-3,5]]
     # dungeon = [[1],[-2],[1]]
-    dungeon = [[1,-3,3],[0,-2,0],[-3,-3,-3]]
+    dungeon = [
+        [1,-3,3],
+        [0,-2,0],
+        [-3,-3,-3]]
     print(calculateMinimumHP(dungeon))

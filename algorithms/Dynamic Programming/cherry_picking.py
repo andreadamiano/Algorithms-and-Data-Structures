@@ -1,29 +1,29 @@
-# def cherry_picking(grid: list[list]):
-#     """Memoization solution"""
-#     steps = [-1, 0, 1]
-#     cols = len(grid[0])
-#     rows = len(grid)
-#     cache = {}
+def cherry_picking(grid: list[list]):
+    """Memoization solution"""
+    steps = [-1, 0, 1]
+    cols = len(grid[0])
+    rows = len(grid)
+    cache = {}
 
-#     def dp(row, col1, col2):
-#         if (row, col1, col2) in cache:
-#             return cache[(row, col1, col2)]
+    def dp(row, col1, col2):
+        if (row, col1, col2) in cache:
+            return cache[(row, col1, col2)]
 
-#         if col1 < 0 or col1 > cols-1 or col2 < 0 or col2 > cols-1 or col1 == col2:
-#             return 0
+        if col1 < 0 or col1 > cols-1 or col2 < 0 or col2 > cols-1 or col1 == col2:
+            return 0
         
-#         if row == rows-1:
-#             return grid[row][col1] + grid[row][col2]
+        if row == rows-1:
+            return grid[row][col1] + grid[row][col2]
 
-#         result = 0
-#         for step1 in steps:
-#             for step2 in steps:
-#                 result = max(result, dp(row+1, col1 + step1, col2 + step2)) #sum the cherry currently being picked and the cherry that will be picked in the future
+        result = 0
+        for step1 in steps:
+            for step2 in steps:
+                result = max(result, dp(row+1, col1 + step1, col2 + step2)) #sum the cherry currently being picked and the cherry that will be picked in the future
 
-#         cache[(row, col1, col2)] = grid[row][col1] + grid[row][col2] + result #sum the cherry currently being picked and the cherry that will be picked in the future
-#         return cache[(row, col1, col2)] 
+        cache[(row, col1, col2)] = grid[row][col1] + grid[row][col2] + result #sum the cherry currently being picked and the cherry that will be picked in the future
+        return cache[(row, col1, col2)] 
     
-#     return dp(0, 0, cols-1)
+    return dp(0, 0, cols-1)
 
 
 def cherry_picking(grid: list[list]):
@@ -37,6 +37,7 @@ def cherry_picking(grid: list[list]):
         curr_dp = [[0] * cols for _ in range(cols)] #empty initialize the current dp table
 
         #iterate over all possible column combinations (greedy approach dont consider overlapping path or the same columns)
+        #make an hypothesis abot where the robot could be at each level in order to compute how much they have could have picked by iterating over all possible paths they could have taken to reach that position
         for col1 in range(cols-1):    
             for col2 in range(col1+1, cols):
                 
