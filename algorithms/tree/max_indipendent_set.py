@@ -15,14 +15,14 @@ def mist(nodes: list, parents: list):
             return 0, 1
 
         indipendent_sets_skip = 0 #the number of inidipendent sets if the current node is skipped
-        indipendent_sets_include = 0 #the number of inidipendent sets if the current node is included 
+        indipendent_sets_include = 1 #the number of inidipendent sets if the current node is included 
         for neighbor in adjency_dict[node]:
             skip, include = dfs(neighbor)
             indipendent_sets_skip += max(include, skip)
             indipendent_sets_include += skip
 
 
-        return indipendent_sets_skip, indipendent_sets_include + 1
+        return indipendent_sets_skip, indipendent_sets_include 
 
     
     #run dfs from the rooted node
