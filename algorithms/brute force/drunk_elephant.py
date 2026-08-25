@@ -33,11 +33,11 @@ if __name__ == "__main__":
     k = 3
     tests = [1, 3, 1, 2, 1]
 
-    # m = 3
-    # k = 3
-    # tests = [7, 7, 7, 8, 8]
-
+    m = 3
     k = 3
-    m = 1
-    tests = [1, 3, 1, 2]
+    tests = [7, 7, 7, 8, 8]
+
+    # k = 3
+    # m = 1
+    # tests = [1, 3, 1, 2]
     print(arrest_elephants(m, k, tests))
