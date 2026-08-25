@@ -1,24 +1,24 @@
-# def longest_decomposition(text: str):
-#     result = 0
-#     left = right = ""
-#     for i, j in zip(text, text[::-1]):
-#         left += i
-#         right = j + right
-#         if left == right:
-#             result += 1
-#             left = right = ""
+def longest_decomposition(text: str):
+    result = 0
+    left = right = ""
+    for i, j in zip(text, text[::-1]):
+        left += i
+        right = j + right
+        if left == right:
+            result += 1
+            left = right = ""
     
-#     return result
+    return result
 
-def longest_decomposition(text: str, res =0):
-    """using tail recursion"""
-    n = len(text)
-    for i in range(1,n//2 +1):
-        if text[0] == text[n-i] and text[i-1] == text[n-1]:
-            if text[:i] == text[n-i:]:
-                return longest_decomposition(text[i:n-i], res+2)
+# def longest_decomposition(text: str, res =0):
+#     """using tail recursion"""
+#     n = len(text)
+#     for i in range(1,n//2 +1):
+#         if text[0] == text[n-i] and text[i-1] == text[n-1]:
+#             if text[:i] == text[n-i:]:
+#                 return longest_decomposition(text[i:n-i], res+2)
     
-    return res + 1 if text else res
+#     return res + 1 if text else res
 
 
 # def longest_decomposition(text: str, res=0):

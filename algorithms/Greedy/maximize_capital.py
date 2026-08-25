@@ -4,19 +4,21 @@ def maximize_capital(k, w, profits, capital):
     
     n = len(profits)
     projects = [(capital[i], profits[i]) for i in range(n)]
-    projects.sort()
+    projects.sort() #sorting allow to scan the projects from the least expensive to the most expensive checking, this allow to find efficiently only the projects that are affordable with the current budget
     max_heap = []
     i = 0
     for _ in range(k):
         # push to the priority queue 
-        while i < n and projects[i][0] <= w:
-            heapq.heappush(max_heap, -projects[i][1])
+        while i < n and projects[i][0] <= w: 
+            heapq.heappush(max_heap, -projects[i][1])  
             i += 1
 
         if not max_heap:
             break
 
-        w -= heapq.heappop(max_heap)
+        w -= heapq.heappop(max_heap) #the greedy choice is to choose first the projects that yield the most profits
+        #whenever making a greedy choice ask a questions:
+        #does choosing the local optimum choice now limit future choices
 
     return w
 
