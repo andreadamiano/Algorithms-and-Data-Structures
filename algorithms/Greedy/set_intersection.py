@@ -7,7 +7,7 @@ def set_intersection(intervals: list):
     for interval in intervals:
         index = bisect.bisect_left(result, interval[0]) #efficiently find the smallest index that put the value in increasing sorted order 
 
-        if not result or index >= len(result) or result[index] < interval[0]:
+        if not result or index >= len(result):
             result.extend([interval[-1]-1, interval[-1]]) #greedy approach put the biggest index in the containing set
 
         elif index == len(result)-1:
