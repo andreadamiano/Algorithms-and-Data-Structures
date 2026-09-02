@@ -1,15 +1,7 @@
 from collections import defaultdict, deque
+import copy
 
-def min_saturated(adj_dict: dict[dict[list]], source_node: int, sink_node: int):
-    """
-    Ford-Fulkerson algorithm to compute the max flow, it repetedly compute a path from the source to the sink
-    if a path is found decrement the forward capacity and increment the backward capacity,
-    repeat untill no more path are found, 
-    at the end of the algorithm the reachable nodes are part of the source split
-    the value of the split (sum of the forward flows edges form the source split to the sink split) is equal to the max flow
-    """
-
-    def bfs(node):
+def bfs(adj_dict: dict[dict[int]], node: int, sink_node: int):
         visited = set()
         queue = deque()
         queue.append(((node, ), float("inf")))
@@ -23,110 +15,116 @@ def min_saturated(adj_dict: dict[dict[list]], source_node: int, sink_node: int):
 
             for neighbor, capacity in adj_dict[current_path[-1]].items():
                 if  capacity and neighbor not in visited:
-                    queue.appendleft((current_path + (neighbor, ), min(min_capacity, adj_dict[current_path[-1]][neighbor])))
+                    queue.append((current_path + (neighbor, ), min(min_capacity, adj_dict[current_path[-1]][neighbor])))
 
         return False, current_path, min_capacity
 
-    result, path, min_capacity = bfs(source_node)
+
+def min_saturated(adj_dict: dict[dict[int]], source_node: int, sink_node: int):
+    """
+    Ford-Fulkerson algorithm to compute the max flow, it repetedly compute a path from the source to the sink
+    if a path is found decrement the forward capacity and increment the backward capacity,
+    repeat untill no more path are found, 
+    at the end of the algorithm the reachable nodes are part of the source split
+    the value of the split (sum of the forward flows edges form the source split to the sink split) is equal to the max flow
+
+    the problem requires to compute the cut with minimum edges (to be saturated), therefore a graph with all unit edges will be used, since: max flow = min cut = n edges * 1
+    """
+    residual_adj_dict = copy.deepcopy(adj_dict) #create a local copy
+    result, path, min_capacity = bfs(residual_adj_dict, source_node, sink_node)
     while result :
 
         for i in range(len(path)-1):
             source = path[i]
             sink = path[i+1]
-            adj_dict[source][sink] -= min_capacity
-            adj_dict[sink][source] += min_capacity
+            residual_adj_dict[source][sink] -= min_capacity
+            residual_adj_dict[sink][source] += min_capacity
 
-        result, path, min_capacity = bfs(source_node)
+        result, path, min_capacity = bfs(residual_adj_dict, source_node, sink_node)
 
     # at the end path will hold the source split 
     edges = set()
     path_set = set(path)
     for source in path:
         for sink in adj_dict[source].keys():
-            if sink not in path_set:
+            if sink not in path_set and adj_dict[source][sink]:
                 edges.add((source, sink))
 
     return edges
 
 
-def max_flow(n_vertices, n_edges, source_index, sink_index, edges):
-    adj_dict = defaultdict(lambda: defaultdict(list))
-    edge_visited = set()
-    paths = []
+def compute_flows(adj_dict: dict[dict[int]], vertices: list, source_node: int, sink_node: int):
+    adj_dict = copy.deepcopy(adj_dict) #create a local copy
+    stop = False
+
+    while not stop:
+        stop = True
+        for vertex in range(1, len(vertices)):
+            flows = vertices[vertex]
+            path = []
+            direction = None
+            if vertex == source_node or vertex == sink_node or flows[0] == flows[1]:
+                continue
+
+            #inflow > outflow
+            elif flows[0] > flows[1]:
+                _, path, _ = bfs(adj_dict, vertex, sink_node)
+                stop = False
+
+            #outflow > inflow
+            else:
+                _, path, _ = bfs(adj_dict, source_node, vertex)
+                stop = False
+
+            if path:
+                diff = abs(flows[0] - flows[1])
+                for i in range(len(path)-1):
+                    source = path[i]
+                    sink = path[i + 1]
+                    adj_dict[source][sink] += diff
+
+                    #update also vertices
+                    vertices[source][1] += diff #outflow of source
+                    vertices[sink][0] += diff #inflow of sink
+
+
+    return adj_dict
+
+
+
+def max_flow(n_vertices, n_edges, source_node, sink_node, edges):
+    adj_dict = defaultdict(dict)
+    residual_adj_dict = defaultdict(dict)
+    vertices = [[0] * 2 for _ in range(n_vertices+1)]
 
     for source, sink, indicator in edges:
-        adj_dict[source][sink].append(indicator)
+        adj_dict[source][sink] = indicator
+        residual_adj_dict[source][sink] = indicator
+        residual_adj_dict[sink][source] = indicator #add the reverse edge to traverse the graph backward 
 
-    def dfs (adj_dict: dict[dict[list]], node: int, prev_node: int, sink_index, path: tuple = (), solve = False):
-        nonlocal edge_visited 
-        nonlocal paths
+        #precompute inflow and outflow
+        if indicator:
+            vertices[sink][0] += 1
+            vertices[source][1] += 1
 
-        if node == sink_index: 
-            if solve:
-                paths.append(path) #save every path to the sink node 
-
-            if (prev_node, node) not in edge_visited:
-                edge_visited.add((prev_node, node))
-                adj_dict[prev_node][node].append(1)
-
-            return 1
-
-        required_flow = 0
-        for neighbor, attributes in adj_dict[node].items():
-            if attributes[0]:
-                required_flow += dfs(adj_dict, neighbor, node, sink_index, path + (neighbor,), solve)
-
-        if prev_node and (prev_node, node) not in edge_visited:
-            edge_visited.add((prev_node, node))
-            adj_dict[prev_node][node].append(required_flow)
-
-        return required_flow
-
-
-    dfs(adj_dict, source_index, None, sink_index, (source_index, ), True) 
-
-    if not paths:
-        return -1, paths
-    
     print(adj_dict)
-    print(paths)
-    # print(saturated_edges)
+    print(vertices)
+    adj_dict_flows = compute_flows(adj_dict, vertices, source_node, sink_node)
 
-    #reverse the graph
-    reverse_adj_dict = defaultdict(lambda: defaultdict(list))
-
-    for source, sink, indicator in edges:
-        reverse_adj_dict[sink][source].append(indicator)
-
-    edge_visited = set()
-    dfs(reverse_adj_dict, sink_index, None, source_index)
-    # print(reverse_adj_dict)
-
-
-    #compute the required flow for each edge by multiplying the required_flow at each edge of the provided graph and the inverted one
-    residual_adj_dict = defaultdict(lambda : defaultdict(int))
-    for path in paths:
-        for i in range(len(path)-1):
-            source = path[i]
-            sink = path[i+1]
-            edge_flow = adj_dict[source][sink][1] * reverse_adj_dict[sink][source][1] 
-            residual_adj_dict[source][sink] =  edge_flow
-            residual_adj_dict[sink][source] = 0
-            # edge_capacity = edge_flow if (source, sink) in saturated_edges else edge_flow + 1
-            # result.append((edge_flow, edge_capacity))
-
-    print(residual_adj_dict)
+    print(adj_dict)
+    print(vertices)
 
     saturated_edges = min_saturated(residual_adj_dict, source_index, sink_index)
-    print(saturated_edges)
+    # print(saturated_edges)
 
     result = []
     for source, sink, _ in edges:
-        edge_flow = residual_adj_dict[source][sink] + residual_adj_dict[sink][source]
+        edge_flow = adj_dict_flows[source][sink]
         edge_capacity = edge_flow if (source, sink) in saturated_edges else edge_flow + 1
         result.append((edge_flow, edge_capacity))
 
     return len(saturated_edges), result
+
 
 if __name__ == "__main__":
     # n_vertices = 5
@@ -152,6 +150,6 @@ if __name__ == "__main__":
     #     edges.append(edge)
 
     min_saturated, result = max_flow(n_vertices, n_edges, source_index, sink_index, edges)
-    # print(min_saturated)
-    # for edge_flow, edge_capacity in result:
-    #     print(f"{edge_flow} {edge_capacity}")
+    print(min_saturated)
+    for edge_flow, edge_capacity in result:
+        print(f"{edge_flow} {edge_capacity}")
