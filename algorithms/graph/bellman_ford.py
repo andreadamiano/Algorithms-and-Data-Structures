@@ -25,14 +25,11 @@ def update_distance_vector(neighbor_node: str, distance_vector: dict):
     for destination in distance_vector.keys():
         cost = current_distance_vector[neighbor_node][0] + distance_vector[destination][0]
 
-        if destination == neighbor_node or destination == "A": #ignore direct edge or self loop 
+        if destination == neighbor_node or destination == "A" or distance_vector[destination][1] == "A": #ignore direct edge or self loop, but most importantly never accept a route that involves the current node as a gateway (to avoid the split horizon issue)
             continue
 
         elif current_distance_vector[destination][1] == neighbor_node: #if an update arrives from the current gateway we must accept it
             current_distance_vector[destination] = [cost, neighbor_node]
-
-        elif distance_vector[destination][1] == "A":
-            continue #never accept a route that involves the current node as a gateway (to avoid the split horizon issue)
 
         elif current_distance_vector[destination][0] > cost: #perform relaxation (brute force distrubuted approach)
             current_distance_vector[destination] = [cost, neighbor_node]
