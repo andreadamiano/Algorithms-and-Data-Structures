@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 def coprime(num1, num2):
     """
     Compute if 2 numbers are comprime by checking if their GCD is 1
@@ -21,37 +23,51 @@ def coprime(num1, num2):
 
 
 def comprime_permutation(n: int, numbers: list[int]):
+    #the first step is to compute the core (the unique prime numbers whose product generate the number) of every number using the siege of Eratosthenes
+    #the sieve of Eratosthenes consists in computing the smallest prime number for every number, to compute the core, simply recurse over the smallest prime number computed as a cached array 
+    spn = [1] * (n+1)
 
-    def create_permutations(number_set: set, position: int = 0, current_permutation: list = [0] * n):
-        """
-        In order for a permmutation to be valid, for every coprime indices the corresponding elements must also be coprime and viceversa
-        """
-        if not number_set:
-            return 1
+    for i in range(2, n+1):
+        if spn[i] != 1:
+            continue
 
-        valid_permutations = 0
-        for number in number_set.copy(): #iterate over a copy to avoid the undefined behavior of iterating over a changing set 
-
-            current_permutation[position] = number
-
-            if not position or coprime(current_permutation[position], current_permutation[position-1]):
-                number_set.remove(number)
-                valid_permutations += create_permutations(number_set, position+1, current_permutation)
-                number_set.add(number)
-
-        return valid_permutations
+        current = i
+        while current < n+1:
+            spn[current] = i
+            current += i
 
 
-         
+    core_buckets = defaultdict(int)
 
-    #preprocessing, remove all already used numbers from the set of availbale nummbers before computing all possible permutations
-    number_set = set([x for x in range(1, n+1)])
-    for number in numbers:
-        if number: 
-            number_set.pop(number)
+    for i in range(1, n+1):
+        core = 1
+        current = i
+        primes = set()
+        while current != 1:
+            prime = spn[current]
 
-    valid_permutations = create_permutations(number_set)
-    return valid_permutations
+            if prime not in primes:
+                core *= prime
+                primes.add(prime)
+
+            current //= prime
+
+        core_buckets[core] += 1
+
+    #count the number of large primes (which are greater than n/2), this number can be merged with the bucket of numbers sharing a core of 1, since they share the same propery, which is they are coprime to all other numbers of the array
+    
+    #the problem states that every element mmust respect the followig property gcd(i, j) = 1 if gcd(p_i, p_j) = 1
+    #in reverse this means that if two indices share a prime factor (gcd != 1), if we decided to permute them their new positions (p_i and p_j) MUST ALSO share that prime factor
+    #therefore numbers in the same core group can only be mapped to elements of the same group
+    #the permutation of all valid numbers is just the mulitplications of the permutation of each group, since they are indipendent frm each others
+    #for instane a group of 2 items has 2! possible permutations
+    for i in range(n//2+1, n+1):
+        if core_buckets[i] == 1:
+            core_buckets.pop(i)
+            core_buckets[1] += 1
+
+    return core_buckets
+
     
 
     
