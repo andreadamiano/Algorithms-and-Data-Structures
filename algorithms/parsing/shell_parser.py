@@ -46,7 +46,7 @@ class RedirCommand:
         self.mode: str = None
 
     def __repr__(self):
-        return f"RedirCommand(command={self.command!r}, file={self.file!r}), mode={self.mode!r}"
+        return f"RedirCommand(command={self.command!r}, file={self.file!r}, mode={self.mode!r})"
 
 class PipeCommand:
     def __init__(self, left: str, rigth: str = None):
@@ -81,7 +81,7 @@ class ShellParser:
         self.input_pos = 0
         self.input = None
 
-    def _get_token(self, input) -> TokenType:
+    def _get_token(self, input) -> Token:
         if self.input_pos == len(input):
             return None
 
@@ -107,7 +107,7 @@ class ShellParser:
         if self.input_pos == len(input):
             return " "
 
-        i = self.input_pos + 1
+        i = self.input_pos
         while (curr_char := input[i]) == " ":
             i += 1
 
@@ -131,9 +131,6 @@ class ShellParser:
         print(command)
 
     def _parse_line(self, input: str):
-            """
-            Parses multine commands and background commands, which are postorder operators
-            """
             command = self._parse_pipe(input)
 
             if self._peek(input) in ";&":
@@ -151,9 +148,6 @@ class ShellParser:
 
 
     def _parse_pipe(self, input: str):
-        """
-        Parses pipe commands, which is an inorder operator
-        """
         command = self._parse_redirections(input)
 
         if  self._peek(input) == "|":
@@ -194,11 +188,14 @@ class ShellParser:
 
 
     def _parse_exec(self, input: str):
-        if (token := self._get_token(input)) == TokenType.OPEN_PAR:
-            self._parse_line()
+        if (token := self._get_token(input)).type == TokenType.OPEN_PAR:
+            command = self._parse_line(input)
 
-            if self._get_token(input) != TokenType.CLOSE_PAR:
+            if self._get_token(input).type != TokenType.CLOSE_PAR:
                 raise Exception("Invalid shell command")
+
+            else:
+                return command
 
         command = ExecCommand(command=token)
 
@@ -213,7 +210,7 @@ if __name__ == "__main__":
     parser = ShellParser()
 
     shell_input = "a | b < c"
-    # shell_input = "a | (b | c)"
+    shell_input = "(a | b) < c"
 
     # shell_input = input()
     parser.parse_shell_commands(shell_input)
