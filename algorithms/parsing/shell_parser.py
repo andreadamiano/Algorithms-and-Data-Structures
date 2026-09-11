@@ -57,14 +57,13 @@ class PipeCommand:
         return f"PipeCommand(left={self.left!r}), rigth={self.rigth!r}"
 
 class ListCommand:
-    def __init__(self, command: str, left: str, rigth: str):
+    def __init__(self,left: str, rigth: str = None):
         self.command_type = CommandType.LIST
-        self.command = command
         self.left = left
         self.rigth = rigth
 
     def __repr__(self):
-        return f"ListCommand(command={self.command!r}, left={self.left!r}), rigth={self.rigth!r}"
+        return f"ListCommand(left={self.left!r}), rigth={self.rigth!r}"
 
 class BackCommand:
     def __init__(self, command: str):
@@ -139,10 +138,19 @@ class ShellParser:
                 match token.type:
 
                     case TokenType.SEPARATOR:
-                        self._parse_line(input)
+                        command = ListCommand(command)
+                        rigth = self._parse_line(input)
+                        command.rigth = rigth
 
                     case TokenType.AND:
                         command = BackCommand(command)
+
+                        if self._peek(input) in ";":
+                            token: Token = self._get_token(input)
+                            command = ListCommand(command)
+                            rigth = self._parse_line(input)
+                            command.rigth = rigth
+
 
             return command
 
@@ -211,6 +219,7 @@ if __name__ == "__main__":
 
     shell_input = "a | b < c"
     shell_input = "(a | b) < c"
+    shell_input = "((a | b) < c ; d & ; e) &"
 
     # shell_input = input()
     parser.parse_shell_commands(shell_input)
