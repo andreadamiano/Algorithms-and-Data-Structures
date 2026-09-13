@@ -1,4 +1,5 @@
 from enum import Enum
+import os
 
 class TokenType(Enum):
     ATOM = 'a'              
@@ -50,6 +51,7 @@ class RedirCommand:
 
 class PipeCommand:
     def __init__(self, left: str, rigth: str = None):
+        self.command_type = CommandType.PIPE
         self.left = left
         self.rigth = rigth
 
@@ -78,13 +80,15 @@ class BackCommand:
 class ShellParser:
     def __init__(self):
         self.input_pos = 0
-        self.input = None
+        self.input_len = 0
 
     def _get_token(self, input) -> Token:
-        if self.input_pos == len(input):
+        if self.input_pos >= self.input_len:
             return None
 
-        while (curr_char := input[self.input_pos]) == " ":
+        value = ""
+
+        while self.input_pos < self.input_len and (curr_char := input[self.input_pos]) == " ":
             self.input_pos += 1
 
         match input[self.input_pos]:
@@ -99,15 +103,32 @@ class ShellParser:
             case _ :
                 token_type = TokenType.ATOM
 
+                curr_char = input[self.input_pos]
+
+                if curr_char == '"':
+                    self.input_pos += 1
+                    while self.input_pos < self.input_len and (curr_char := input[self.input_pos]) != '"':
+                        value += curr_char
+                        self.input_pos += 1 
+
+                    if curr_char != '"':
+                        raise Exception('invalid input, " never closed')
+
+                else:
+                    while self.input_pos < self.input_len and (curr_char := input[self.input_pos]) != " ":
+                        value += curr_char
+                        self.input_pos += 1
+
         self.input_pos += 1
-        return Token(curr_char, token_type)
+        return Token(value, token_type)
 
     def _peek(self, input: str):
         if self.input_pos == len(input):
-            return " "
+            return None
 
         i = self.input_pos
-        while (curr_char := input[i]) == " ":
+        curr_char = None
+        while self.input_pos < self.input_len and (curr_char := input[i]) == " ":
             i += 1
 
         return curr_char
@@ -126,13 +147,14 @@ class ShellParser:
         Once the higher precedence parselet have finished the recursive functions will bubble up and the lower level precedence parselet operator 
         will work on the next part of the input merging eventually with the previously parsed input
         """
+        self.input_len = len(input)
         command = self._parse_line(input)
-        print(command)
-
+        return command
+    
     def _parse_line(self, input: str):
             command = self._parse_pipe(input)
 
-            if self._peek(input) in ";&":
+            if (next_char := self._peek(input)) and next_char in ";&":
                 token: Token = self._get_token(input)
 
                 match token.type:
@@ -158,7 +180,7 @@ class ShellParser:
     def _parse_pipe(self, input: str):
         command = self._parse_redirections(input)
 
-        if  self._peek(input) == "|":
+        if  (next_char := self._peek(input)) and next_char == "|":
             self._get_token(input) #consume the pipe token
             command = PipeCommand(command) #wrap the previously parsed commmand into a pipe command to generate the AST 
 
@@ -171,7 +193,7 @@ class ShellParser:
     def _parse_redirections(self, input: str):
         command = self._parse_exec(input)
 
-        if  self._peek(input) in "<>":
+        if  (next_char := self._peek(input)) and next_char in "<>":
             redir_token: Token = self._get_token(input) #consume redirect token
             command = RedirCommand(command) #wrap the previously parsed commmand into a redir command to generate the AST 
             file: TokenType = self._get_token(input)
@@ -183,13 +205,13 @@ class ShellParser:
 
             match redir_token.type:
                 case TokenType.REDIR_IN:
-                    command.mode = "r"
+                    command.mode = os.O_RDONLY | os.O_CREAT
 
                 case TokenType.REDIR_OUT:
-                    command.mode = "w"
+                    command.mode = os.O_WRONLY | os.O_CREAT
 
                 case TokenType.REDIR_APPEND:
-                    command.mode = "a"
+                    command.mode = os.O_APPEND | os.O_CREAT
 
 
         return command
@@ -205,23 +227,26 @@ class ShellParser:
             else:
                 return command
 
-        command = ExecCommand(command=token)
+        command = ExecCommand(command=token, args=[token.value])
 
-        while self._peek(input) == TokenType.ATOM:
+        while (next_char := self._peek(input)) and next_char not in "();&|<>":
             token = self._get_token(input)
-            command.args.append(token)
+            command.args.append(token.value)
 
         return command
-
 
 if __name__ == "__main__":
     parser = ShellParser()
 
     shell_input = "a | b < c"
-    shell_input = "(a | b) < c"
-    shell_input = "((a | b) < c ; d & ; e) &"
+    shell_input = "echo 'ciao'"
+    shell_input = "echo < ./parser.py"
+    shell_input = "echo 'ciao' ; echo 'come va'"
+    shell_input = 'echo "ciao"'
+    # shell_input = "(a | b) < c"
+    # shell_input = "((a | b) < c ; d & ; e) &"
 
     # shell_input = input()
-    parser.parse_shell_commands(shell_input)
+    print(parser.parse_shell_commands(shell_input))
 
 
