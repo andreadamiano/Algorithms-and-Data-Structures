@@ -148,6 +148,7 @@ class ShellParser:
         will work on the next part of the input merging eventually with the previously parsed input
         """
         self.input_len = len(input)
+        self.input_pos = 0
         command = self._parse_line(input)
         return command
     
@@ -218,7 +219,12 @@ class ShellParser:
 
 
     def _parse_exec(self, input: str):
-        if (token := self._get_token(input)).type == TokenType.OPEN_PAR:
+        token = self._get_token(input)
+
+        if not token:
+            return None
+         
+        if token.type == TokenType.OPEN_PAR:
             command = self._parse_line(input)
 
             if self._get_token(input).type != TokenType.CLOSE_PAR:
@@ -243,6 +249,8 @@ if __name__ == "__main__":
     shell_input = "echo < ./parser.py"
     shell_input = "echo 'ciao' ; echo 'come va'"
     shell_input = 'echo "ciao"'
+    shell_input = 'echo "ciao coma va?"'
+    shell_input = 'echo ciao coma va?'
     # shell_input = "(a | b) < c"
     # shell_input = "((a | b) < c ; d & ; e) &"
 
