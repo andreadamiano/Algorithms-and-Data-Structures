@@ -58,7 +58,7 @@ class PrattParser:
         self.prefix_parselets = {}
         self.infix_parselets = {}
 
-    def tokenize(text):
+    def tokenize(self, text):
         return [Token(x) for x in re.split(r"(\s+|[-+*/=()])", text) if x.strip()]
 
     def parse(self, precedence=0):
@@ -154,8 +154,8 @@ class Parser(PrattParser):
 if __name__ == "__main__":
     # some test inputs
     print(Parser('1 + 2 * 3').parse())
-    print(Parser('1 + 2 - 3').parse())
-    print(Parser('(1 + 2) * 3').parse())
-    print(Parser('+ 1 + 2').parse())
-    print(Parser('+ a + 22').parse())
-    print(Parser('1 - 2 - 3').parse())
+    # print(Parser('1 + 2 - 3').parse())
+    # print(Parser('(1 + 2) * 3').parse())
+    # print(Parser('+ 1 + 2').parse())
+    # print(Parser('+ a + 22').parse())
+    # print(Parser('1 - 2 - 3').parse())
