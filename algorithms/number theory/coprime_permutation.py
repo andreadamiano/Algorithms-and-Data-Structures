@@ -69,13 +69,13 @@ def comprime_permutation(n: int, numbers: list[int]):
         cores[i] = core
         core_buckets[core] += 1
 
-    #count the number of large primes (which are greater than n/2), this number can be merged with the bucket of numbers sharing a core of 1, since they share the same propery, which is they are coprime to all other numbers of the array
-    
     #the problem states that every element mmust respect the followig property gcd(i, j) = 1 if gcd(p_i, p_j) = 1
     #in reverse this means that if two indices share a prime factor (gcd != 1), if we decided to permute them their new positions (p_i and p_j) MUST ALSO share that prime factor
-    #therefore numbers in the same core group can only be mapped to elements of the same group
+    #therefore indices in the same core group can only be mapped to indicices of the same group.
+    #the mapping on each group is a bijection: every index maps to a unique index inside the same group, using every position up with no duplicates.
     #the permutation of all valid numbers is just the mulitplications of the permutation of each group, since they are indipendent from each others
     #for instane a group of 2 items has 2! possible permutations
+    #count the number of large primes (which are greater than n/2), this number can be merged with the bucket of numbers sharing a core of 1, since they share the same propery, which is they are coprime to all other numbers of the array
     for i in range(n//2+1, n+1):
         if core_buckets[i] == 1 and spn[i] == cores[i]: #check if the nunmmber is prime and if its bucket size is 1, that way we are sure it share the same prime factor with 1
             core_buckets.pop(i)
