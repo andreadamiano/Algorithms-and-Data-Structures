@@ -2,7 +2,7 @@ import bisect
 
 def set_intersection(intervals: list):
     result = []
-    intervals.sort(key=lambda x: (x[1], -x[0])) #in order to optimize comparison between the overlapping windows sort by increasnig ends and decreasing starts
+    intervals.sort(key=lambda x: (x[1], -x[0])) #in order to optimize comparison between the overlapping windows sort by increasing ends and decreasing starts
     
     for interval in intervals:
         index = bisect.bisect_left(result, interval[0]) #efficiently find the smallest index that put the value in increasing sorted order 

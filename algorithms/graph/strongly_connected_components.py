@@ -1,5 +1,12 @@
 from collections import defaultdict
 
+
+"""
+The differene between connected components and strongly connected components in a digraph is that:
+    - in a strongly connected component we need a 2 way connection between every node of the set 
+    - in a connected component we can reach a vertex from every other vertex of the set
+"""
+
 class GfG:
     # Run a dfs on the original graph
     def DFS1(self, u, adj, visited, st):
@@ -42,7 +49,7 @@ class GfG:
         SCCs = []
 
         while st:
-            u = st.pop()
+            u = st.pop() #pop the node with the longer time to finish
             if not visited[u]:
                 scc = []
                 self.DFS2(u, revAdj, visited, scc)

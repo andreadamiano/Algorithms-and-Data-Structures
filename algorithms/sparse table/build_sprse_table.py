@@ -1,12 +1,12 @@
 import math
 
 def build_sparse_table(array: list):
-    """
+    """table
     The sparse table stores at each cell the min element in the range of lenght 2^i
     """
     n = len(array)
     log_n = int(math.log2(n)) + 1  #+1 to store also the base case inside the dp table
-    sparse_table = [[0] * n for _ in range(log_n)] #d[j][i] store the min element in the range j:2^i
+    sparse_table = [[0] * n for _ in range(log_n)] #d[i][j] store the min element in the range j:2^i
     sparse_table[0] = array[:]
 
     for j in range(1, log_n):

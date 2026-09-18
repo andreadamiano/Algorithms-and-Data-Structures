@@ -16,6 +16,7 @@ class Comparator
         }
 }; 
 
+// A spanning tree of a connected graph is a subgraph that includes all the vertices of the original graph uaing a subset of the edges withou forming any cycles
 std::list<std::shared_ptr<Graph::Edge>> Kruskal(Graph& graph)
 {
    Partition<std::string> clusters; 

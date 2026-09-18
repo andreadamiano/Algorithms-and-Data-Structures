@@ -54,6 +54,11 @@ def min_cut(adj_dict: dict[dict[int]], source_node: int, sink_node: int):
 
 
 def compute_flows(adj_dict: dict[dict[int]], vertices: list, source_node: int, sink_node: int):
+    """
+    To compute the required flow at every edge the algorithm iterate over every node untill the inflow and the outflow of each node is equal for all.
+    If the inflow is bigger then the outlow, find a path starting from current node to the sink and add the required flow.
+    If on the contrary the outer flow is bigger, find a path form the source to the current node and add the required flow.
+    """
     flow_dict = copy.deepcopy(adj_dict) #create a local copy
     stop = False
 

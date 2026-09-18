@@ -19,7 +19,7 @@ def max_partition(n, vertices, parents):
         """
 
         #collect child heaps before mergin them
-        child_heaps = [] 
+        child_heaps = [] #min heaps of all the indipendent paths encoutered by the child of a node
         current_heap = []
         biggest_child_heap_index = 0
         biggest_child_heap_len = 0
