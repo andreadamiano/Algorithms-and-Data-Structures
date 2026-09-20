@@ -108,7 +108,7 @@ def check_block_planarity(adj_dict: dict[list[int]], parent_node: int = None, cu
         else:
             result = True
 
-            #check for any overlapping window in left
+            #check for any overlapping window on the left
             for source, dest in left:
                 if (spine_node_dict[source] < spine_node_dict[current_node] and spine_node_dict[dest] < spine_node_dict[neighbor]) or (spine_node_dict[source] > spine_node_dict[current_node] and spine_node_dict[dest] > spine_node_dict[neighbor]):
                     result = False
@@ -118,7 +118,7 @@ def check_block_planarity(adj_dict: dict[list[int]], parent_node: int = None, cu
                 left.append((current_node, neighbor))
                 back_edges.add((current_node, neighbor))
                 back_edges.add((neighbor, current_node))
-            else:
+            else: #check for a backup non overlapping window on the rigth
                 for source, dest in right:
                     if (spine_node_dict[source] < spine_node_dict[current_node] and spine_node_dict[dest] < spine_node_dict[neighbor]) or (spine_node_dict[source] > spine_node_dict[current_node] and spine_node_dict[dest] > spine_node_dict[neighbor]):
                         return False
@@ -154,7 +154,12 @@ def check_planarity(edges: list[int]):
 
     n_vertices = len(vertices_set)
 
-    if n_edges > 3 * n_vertices - 6:
+    #Euler original formual describes the relationship between vertex, edges and faces for a planar graph
+    # V - E + F = 2
+    #this formula defines that adding a new edge to a planar graph must either create a new vertex or a new face to keep the topology balanced 
+    #this can be demostrated via induction (demostrating that adding a new edge to a base case must be either creating a enw vertex or a new face) and by induction that for the case with n+1 edges the condition must still holds
+
+    if n_edges > 3 * n_vertices - 6: #generalization of the Euler formula
         return False
         
     find_blocks(adj_dict, blocks)
