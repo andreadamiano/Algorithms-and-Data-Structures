@@ -18,9 +18,12 @@ class Rule:
 
 class NFA:
     
-    def __init__(self):
+    def __init__(self, matcher = None):
         self._adjency_dict: dict[State, list[Rule]] = defaultdict(list)
         self._ends: set[Rule] = set() #efficien lookup of end rules
+
+        if matcher:
+            self.add_rule(State.START, State.END, matcher)
 
     def add_rule(self, source, destination, matcher: str = None) -> Rule:
         rule = Rule(source, destination, matcher)
@@ -65,6 +68,8 @@ class NFA:
         #update ends 
         self._ends.update(nfa._ends)
 
+        return right + 1
+
 
     def star(self, new):
         #remove ending states and connect every ending rule back to the old start via epsilon transitions
@@ -90,9 +95,7 @@ class NFA:
         #add nfa adjency dict 
         nfa_start = new
         dfa_start_rule_old = nfa._adjency_dict.pop(State.START)[0]
-        dfa_start_rule = Rule(new, dfa_start_rule_old.destination)
         self._adjency_dict.update(nfa._adjency_dict)
-        self._adjency_dict[new] = dfa_start_rule
         nfa._adjency_dict[State.START].append(dfa_start_rule_old) #restore starting state of the nfa
 
         #connect end states to the starting state of the provided nfa via epsilon transition
@@ -101,7 +104,28 @@ class NFA:
             rule.destination = new
             self._ends.remove(rule)
             self.add_rule(rule.destination, nfa_start)
-        
+
+        #connect the old start back with the other nfa
+        self.add_rule(nfa_start, dfa_start_rule_old.destination, dfa_start_rule_old.matcher)
+
+        return new 
+
+
+    def plus(self, new):
+        for rule in self._ends.copy():
+            self._ends.remove(rule)
+            rule.destination = new
+            self.add_rule(new, new, rule.matcher) #add a loop to match many of the last matcher
+            self.add_rule(new, State.END) #add a new end via an epsilon transition
+            new += 1
+
+        return new
+
+
+    def question(self):
+        for rule in self._ends.copy():
+            self.add_rule(rule.source, State.END) #add a new rule connecting the end via an epsilon transition to allow zero matches
+
 
     def match(self, input: str):
         #follow all epsilon transitions at the beginning to get all active states
@@ -151,12 +175,19 @@ if __name__ == "__main__":
 
     nfa3 = NFA()
     nfa3.add_rule(State.START, 6, "a")
-    nfa3.add_rule(6, 7)
     nfa3.add_rule(7, State.END, "a")
+    nfa3.add_rule(6, 7)
 
-    nfa1.union(nfa2, 2, 3)
-    nfa1.star(4)
-    nfa3.concat(nfa1, 8)
+    nfa4 = NFA('e')
 
+    # nfa1.union(nfa2, 2, 3)
+    # nfa1.star(4)
+    # nfa3.concat(nfa1, 8)
+    new = nfa1.plus(2)
+    new = nfa1.union(nfa2, new, new+1)
+    nfa1.concat(nfa4, new)
+    # nfa1.union(nfa4, 2, 3)
+    nfa1.question()
+    print(nfa1.match("bb"))
 
 
