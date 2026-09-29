@@ -28,7 +28,7 @@ class CommandType(Enum):
     PIPE="PIPE"
     BACK="BACK"
 
-#define the nodes ot the AST
+#define the nodes of the AST
 
 class ExecCommand:
     def __init__(self, command: str, args: list[str] = None): 
