@@ -51,6 +51,9 @@ class NFA:
 
 
     def union(self, nfa: "NFA", left, right):
+        """
+        Matches either the current nfa or the provided nfa
+        """
         #remove starting nodes
         self._adjency_dict[State.START][0].source = left
         self._adjency_dict[left] = self._adjency_dict[State.START]
@@ -72,6 +75,9 @@ class NFA:
 
 
     def star(self, new):
+        """
+        Matches 0 or more of the last rule of the current nfa
+        """
         #remove ending states and connect every ending rule back to the old start via epsilon transitions
         for rule in self._ends.copy():
             rule.destination = new #change the rule
@@ -92,6 +98,9 @@ class NFA:
 
 
     def concat(self, nfa: "NFA", new):
+        """
+        Concatenate the ending state of the current nfa with the provided nfa
+        """
         #add nfa adjency dict 
         nfa_start = new
         dfa_start_rule_old = nfa._adjency_dict.pop(State.START)[0]
@@ -112,6 +121,9 @@ class NFA:
 
 
     def plus(self, new):
+        """
+        Matches one or more of the last rule of the current nfa
+        """
         for rule in self._ends.copy():
             self._ends.remove(rule)
             rule.destination = new
@@ -123,6 +135,9 @@ class NFA:
 
 
     def question(self):
+        """
+        Matches 0 or 1 of the last rule of the current nfa 
+        """
         for rule in self._ends.copy():
             self.add_rule(rule.source, State.END) #add a new rule connecting the end via an epsilon transition to allow zero matches
 
