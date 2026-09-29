@@ -20,14 +20,14 @@ class NFA:
     
     def __init__(self):
         self._adjency_dict: dict[State, list[Rule]] = defaultdict(list)
-        self._state_rule: dict[State, list[Rule]] =  defaultdict(dict) #efficien lookup of rules given a state
+        self._ends: set[Rule] = set() #efficien lookup of end rules
 
     def add_rule(self, source, destination, matcher: str = None) -> Rule:
         rule = Rule(source, destination, matcher)
         self._adjency_dict[rule.source].append(rule)
 
-        self._state_rule[source][(source, destination)] = rule
-        self._state_rule[destination][(source, destination)] = rule
+        if destination == State.END:
+            self._ends.add(rule)
 
         return rule
 
@@ -49,9 +49,12 @@ class NFA:
 
     def union(self, nfa: "NFA", left, right):
         #remove starting nodes
+        self._adjency_dict[State.START][0].source = left
         self._adjency_dict[left] = self._adjency_dict[State.START]
-        old_start_list = self._adjency_dict.pop(State.START)
+        self._adjency_dict.pop(State.START)
+        
         self._adjency_dict.update(nfa._adjency_dict)
+        self._adjency_dict[State.START][0].source = right
         self._adjency_dict[right] = self._adjency_dict[State.START]
         self._adjency_dict.pop(State.START)
 
@@ -59,58 +62,45 @@ class NFA:
         self.add_rule(State.START, right)
         self.add_rule(State.START, left)
 
-        #update state rule mapping 
-        for state, rules in nfa._state_rule.items():
-            if state == State.START:
-                state = right
-
-            for key, rule in rules.items():
-                if key[0] == State.START:
-                    rule.source = right
-                    key = (right, key[1])
-
-                elif key[1] == State.START:
-                    rule.destination = right
-                    key = (key[0], right)
-                    
-                self._state_rule[state][key] = rule
-        
-        for rule in old_start_list:
-            rule = self._state_rule[rule.source].pop((State.START, rule.destination))
-            rule = self._state_rule[rule.destination].pop((State.START, rule.destination))
-            rule.source = left
-            self._state_rule[left][(left, rule.destination)] = rule
-            self._state_rule[rule.destination][(left, rule.destination)] = rule
+        #update ends 
+        self._ends.update(nfa._ends)
 
 
     def star(self, new):
         #remove ending states and connect every ending rule back to the old start via epsilon transitions
-        for key, rule in self._state_rule[State.END].items().copy():
+        for rule in self._ends.copy():
             rule.destination = new #change the rule
-            self._state_rule[State.END].pop((rule.source, State.END)) #remove the end state from the mapping 
-            self._state_rule[new][rule.source, rule.destination] = rule #add the rule to the new rule mapping
-            self._state_rule[rule.source].pop((rule.source, State.END)) #remove the source state from the mapping
-            self._state_rule[rule.source][(rule.source, rule.destination)] = rule #add the source state to the new rule mapping
-            self.add_rule(new, State.START) #connect the renamed state back to the old starting state
+            self._ends.remove(rule)
+            rule = self.add_rule(new, State.END) #connect the renamed state back to the old starting state
             new += 1
 
         #remove starting state and make it an ending node
+        self._adjency_dict[State.START][0].source = State.END
+
         self._adjency_dict[State.END] = self._adjency_dict[State.START]
         self._adjency_dict.pop(State.START)
 
-        #update state rule mapping
-        for key, rule in self._state_rule[State.START].items():
-            new_key =key
-            if key[0] == State.START: 
-                new_key[0] == State.END
-                rule.source = State.END #change the rule
+        #add new starting state
+        self.add_rule(State.START, State.END)
 
-            elif key[1] == State.START:
-                new_key[1] == State.END
-                rule.destination = State.END #change the rule
-                            
-            self._state_rule[State.START].pop(key) #remove the start state from the old rule mapping 
-            self._state_rule[State.END][new_key] = rule #add the rule to the old start rule mapping
+        return new
+
+
+    def concat(self, nfa: "NFA", new):
+        #add nfa adjency dict 
+        nfa_start = new
+        dfa_start_rule_old = nfa._adjency_dict.pop(State.START)[0]
+        dfa_start_rule = Rule(new, dfa_start_rule_old.destination)
+        self._adjency_dict.update(nfa._adjency_dict)
+        self._adjency_dict[new] = dfa_start_rule
+        nfa._adjency_dict[State.START].append(dfa_start_rule_old) #restore starting state of the nfa
+
+        #connect end states to the starting state of the provided nfa via epsilon transition
+        for rule in self._ends.copy():
+            new += 1
+            rule.destination = new
+            self._ends.remove(rule)
+            self.add_rule(rule.destination, nfa_start)
         
 
     def match(self, input: str):
@@ -159,9 +149,14 @@ if __name__ == "__main__":
     nfa2 = NFA()
     nfa2.add_rule(State.START, State.END, "b")
 
+    nfa3 = NFA()
+    nfa3.add_rule(State.START, 6, "a")
+    nfa3.add_rule(6, 7)
+    nfa3.add_rule(7, State.END, "a")
+
     nfa1.union(nfa2, 2, 3)
     nfa1.star(4)
-
+    nfa3.concat(nfa1, 8)
 
 
 
