@@ -10,6 +10,8 @@ class TokenType(Enum):
     START = '*'
     PLUS = '+'
     UNION = '|'
+    QUESTION = '?'
+
 
 class Token:
     def __init__(self, value: str, type: TokenType):
@@ -17,7 +19,67 @@ class Token:
         self.type = type
 
 
+class RuleType(Enum):
+    UNION="UNION"
+    QUESTION="QUESTION"
+    PLUS="PLUS"
+    STAR="STAR"
+    CONCAT="CONCAT"
+
+#define the nodes of the AST
+
+class UnionRUle:
+    def __init__(self, left, rigth = None): 
+        self.rule_type = RuleType.UNION
+        self.left = left 
+        self.rigth = rigth
+
+    def __repr__(self):
+        return f"UnionRUle(left={self.left!r}, right={self.rigth!r})"
+
+
+class QuestionRule:
+    def __init__(self, rule): 
+        self.rule_type = RuleType.QUESTION
+        self.rule = rule 
+
+    def __repr__(self):
+        return f"QuestionRule(rule={self.rule!r})"
+
+
+class PlusRule:
+    def __init__(self, rule): 
+        self.rule_type = RuleType.PLUS
+        self.rule = rule 
+
+    def __repr__(self):
+        return f"PlusRule(rule={self.rule!r})"
+
+
+class StarRule:
+    def __init__(self, rule): 
+        self.rule_type = RuleType.STAR
+        self.rule = rule 
+
+    def __repr__(self):
+        return f"StarRule(rule={self.rule!r})"
+
+
+class ConcatRUle:
+    def __init__(self, left, rigth = None): 
+        self.rule_type = RuleType.CONCAT
+        self.left = left 
+        self.rigth = rigth
+
+    def __repr__(self):
+        return f"ConcatRUle(left={self.left!r}, right={self.rigth!r})"
+
+
 class Regex:
+    """
+    Parses regex expressions and converts them into nfa.
+    """
+    
     def __init__(self):
         self.input_pos = 0
         self.input_len = 0
@@ -60,20 +122,16 @@ class Regex:
         return Token(curr_char, token_type)
 
 
-    def match(self, pattern: str, string: str):
-        nfa: NFA = self._build_nfa()
-        nfa.match(string)
-
-
-    def _build_nfa(self, input: str):
+    def parse_regex(self, input: str):
         """
-        Parse regex expression and build the corresponding nfa.
-        operator precedence from highest to lowest:
+        Parse regex expression and build the corresponding AST.
+        Operator precedence from highest to lowest:
             - escape (\)
-            - paranthesis 
-            - kleene star (*), plus (+) 
+            - paranthesis ()
+            - kleene star (*), plus (+), question mark (?)
             - concatenation (implicit operator)
             - union (|)
+        The idea is to descent the hierarchy from the lowest precedence operators and bubble up as we finished parsing higher level operators
         """
 
         self._parse_union()
@@ -111,7 +169,19 @@ class Regex:
 
         return nfa
 
+    
+    def _build_nfa(self, parsed_regex_expression):
+        pass 
+
+
+    def match(self, pattern: str, string: str):
+        parsed_regex = self.parse_regex(pattern)
+        nfa: NFA = self._build_nfa(parsed_regex)
+        nfa.match(string)
+
 if __name__ == "__main__":
-    input = r"\aa|b"
+    pattern = r"\aa|b"
+    text = "aa"
     # input = "a|b*"
-    parser = 
+    re = Regex()
+    re.match(pattern, text)
