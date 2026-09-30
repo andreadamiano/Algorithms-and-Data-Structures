@@ -20,7 +20,7 @@ class NFA:
     
     def __init__(self, matcher = None):
         self._adjency_dict: dict[State, list[Rule]] = defaultdict(list)
-        self._ends: set[Rule] = set() #efficien lookup of end rules
+        self._end_rules: set[Rule] = set() #efficien lookup of end rules
 
         if matcher:
             self.add_rule(State.START, State.END, matcher)
@@ -30,7 +30,7 @@ class NFA:
         self._adjency_dict[rule.source].append(rule)
 
         if destination == State.END:
-            self._ends.add(rule)
+            self._end_rules.add(rule)
 
         return rule
 
@@ -68,8 +68,8 @@ class NFA:
         self.add_rule(State.START, right)
         self.add_rule(State.START, left)
 
-        #update ends 
-        self._ends.update(nfa._ends)
+        #update end rules
+        self._end_rules.update(nfa._end_rules)
 
         return right + 1
 
@@ -79,9 +79,9 @@ class NFA:
         Matches 0 or more of the current nfa
         """
         #remove ending states and connect every ending rule back to the old start via epsilon transitions
-        for rule in self._ends.copy():
+        for rule in self._end_rules.copy():
             rule.destination = new #change the rule
-            self._ends.remove(rule)
+            self._end_rules.remove(rule)
             rule = self.add_rule(new, State.END) #connect the renamed state back to the old starting state
 
         #remove starting state and make it an ending node
@@ -106,18 +106,20 @@ class NFA:
         self._adjency_dict.update(nfa._adjency_dict)
         nfa._adjency_dict[State.START].append(dfa_start_rule_old) #restore starting state of the other nfa
 
-        #connect end states to the starting state of the provided nfa via epsilon transition
+        #remove end rules of the current nfa
         new += 1
-        for rule in self._ends.copy():
+        for rule in self._end_rules.copy():
             rule.destination = new
-            self._ends.remove(rule)
-            self.add_rule(rule.destination, nfa_start) #add epsilon transition from the previous end of the current nfa with the old start of the provided nfa 
+            self._end_rules.remove(rule)
+        
+        #add epsilon transition from the previous end of the current nfa with the old start of the provided nfa 
+        self.add_rule(new, nfa_start) 
 
-        #add back the old tart of the other nfa
+        #add back the old start of the other nfa
         self.add_rule(nfa_start, dfa_start_rule_old.destination, dfa_start_rule_old.matcher)
 
-        #update ends 
-        self._ends.update(nfa._ends)
+        #update end rules
+        self._end_rules.update(nfa._end_rules)
 
         return new + 1
 
@@ -191,12 +193,13 @@ if __name__ == "__main__":
     # nfa1.union(nfa2, 2, 3)
     # nfa1.star(4)
     # nfa3.concat(nfa1, 8)
-    nfa1.plus()
-    # new = nfa1.union(nfa2, 2, 3)
-    # nfa1.concat(nfa4, new)
+    # nfa1.plus()
+    # nfa1.question()
+    new = nfa1.union(nfa2, 2, 3)
+    nfa1.concat(nfa4, new)
     # # nfa1.union(nfa4, 2, 3)
     
     # nfa1.question()
-    print(nfa1.match("aaaa"))
+    print(nfa1.match("b"))
 
 
