@@ -76,7 +76,7 @@ class NFA:
 
     def star(self, new):
         """
-        Matches 0 or more of the last rule of the current nfa
+        Matches 0 or more of the current nfa
         """
         #remove ending states and connect every ending rule back to the old start via epsilon transitions
         for rule in self._ends.copy():
@@ -105,41 +105,35 @@ class NFA:
         nfa_start = new
         dfa_start_rule_old = nfa._adjency_dict.pop(State.START)[0]
         self._adjency_dict.update(nfa._adjency_dict)
-        nfa._adjency_dict[State.START].append(dfa_start_rule_old) #restore starting state of the nfa
+        nfa._adjency_dict[State.START].append(dfa_start_rule_old) #restore starting state of the other nfa
 
         #connect end states to the starting state of the provided nfa via epsilon transition
+        new += 1
         for rule in self._ends.copy():
-            new += 1
             rule.destination = new
             self._ends.remove(rule)
-            self.add_rule(rule.destination, nfa_start)
+            self.add_rule(rule.destination, nfa_start) #add epsilon transition from the previous end of the current nfa with the old start of the provided nfa 
 
-        #connect the old start back with the other nfa
+        #add back the old tart of the other nfa
         self.add_rule(nfa_start, dfa_start_rule_old.destination, dfa_start_rule_old.matcher)
+
+        #update ends 
+        self._ends.update(nfa._ends)
 
         return new 
 
 
     def plus(self, new):
         """
-        Matches one or more of the last rule of the current nfa
+        Matches one or more of the current nfa
         """
-        for rule in self._ends.copy():
-            self._ends.remove(rule)
-            rule.destination = new
-            self.add_rule(new, new, rule.matcher) #add a loop to match many of the last matcher
-            self.add_rule(new, State.END) #add a new end via an epsilon transition
-            new += 1
-
-        return new
-
+        self.add_rule(State.END, State.START) #add a new rule connecting the start via an epsilon transition to allow more matches
 
     def question(self):
         """
-        Matches 0 or 1 of the last rule of the current nfa 
+        Matches 0 or 1 of the current nfa 
         """
-        for rule in self._ends.copy():
-            self.add_rule(rule.source, State.END) #add a new rule connecting the end via an epsilon transition to allow zero matches
+        self.add_rule(State.START, State.END) #add a new rule connecting the end via an epsilon transition to allow zero matches
 
 
     def match(self, input: str):
