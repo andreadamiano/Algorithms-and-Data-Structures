@@ -83,7 +83,6 @@ class NFA:
             rule.destination = new #change the rule
             self._ends.remove(rule)
             rule = self.add_rule(new, State.END) #connect the renamed state back to the old starting state
-            new += 1
 
         #remove starting state and make it an ending node
         self._adjency_dict[State.START][0].source = State.END
@@ -94,7 +93,7 @@ class NFA:
         #add new starting state
         self.add_rule(State.START, State.END)
 
-        return new
+        return new + 1
 
 
     def concat(self, nfa: "NFA", new):
@@ -120,7 +119,7 @@ class NFA:
         #update ends 
         self._ends.update(nfa._ends)
 
-        return new 
+        return new + 1
 
 
     def plus(self, new):
