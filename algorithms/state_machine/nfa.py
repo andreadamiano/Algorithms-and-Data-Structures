@@ -122,7 +122,7 @@ class NFA:
         return new + 1
 
 
-    def plus(self, new):
+    def plus(self):
         """
         Matches one or more of the current nfa
         """
@@ -191,11 +191,12 @@ if __name__ == "__main__":
     # nfa1.union(nfa2, 2, 3)
     # nfa1.star(4)
     # nfa3.concat(nfa1, 8)
-    new = nfa1.plus(2)
-    new = nfa1.union(nfa2, new, new+1)
-    nfa1.concat(nfa4, new)
-    # nfa1.union(nfa4, 2, 3)
-    nfa1.question()
-    print(nfa1.match("bb"))
+    nfa1.plus()
+    # new = nfa1.union(nfa2, 2, 3)
+    # nfa1.concat(nfa4, new)
+    # # nfa1.union(nfa4, 2, 3)
+    
+    # nfa1.question()
+    print(nfa1.match("aaaa"))
 
 
