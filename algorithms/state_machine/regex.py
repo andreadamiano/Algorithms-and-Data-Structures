@@ -7,7 +7,7 @@ class TokenType(Enum):
     ESCAPE = '\\'
     OPEN_PAR = '('          
     CLOSE_PAR = ')'    
-    START = '*'
+    STAR = '*'
     PLUS = '+'
     UNION = '|'
     QUESTION = '?'
@@ -17,6 +17,9 @@ class Token:
     def __init__(self, value: str, type: TokenType):
         self.value = value
         self.type = type
+
+    def __repr__(self):
+        return f"Token(value={self.value!r}, type={self.type!r})"
 
 
 class RuleType(Enum):
@@ -84,7 +87,7 @@ class Regex:
         self.input_pos = 0
         self.input_len = 0
         self.state_index = 0 #autoincrementing index to assign to nfastates
-        self.nfa = None
+        self.nfa: NFA = None
 
 
     def _peek(self, input: str):
@@ -107,18 +110,18 @@ class Regex:
             self.input_pos += 1
 
         match curr_char:
-            case '|' | '(' | ')' | '\\' | '*' | '+':
-                if curr_char == '\\':
-                    self.input_pos += 1 #consume the escape token
-                    curr_char = input[self.input_pos]
-                    token_type = TokenType.ATOM
-                
-                else:
-                    token_type = TokenType(curr_char)
+            case '|' | '(' | ')' | '*' | '+':
+                token_type = TokenType(curr_char)
+
+            case '\\':
+                self.input_pos += 1 #consume the escape token
+                curr_char = input[self.input_pos]
+                token_type = TokenType.ATOM
 
             case _ :
                 token_type = TokenType.ATOM
 
+        self.input_pos += 1 
         return Token(curr_char, token_type)
 
 
@@ -134,53 +137,82 @@ class Regex:
         The idea is to descent the hierarchy from the lowest precedence operators and bubble up as we finished parsing higher level operators
         """
 
-        self._parse_union()
+        rule = self._parse_union(input)
+        return rule
 
 
     def _parse_union(self, input: str):
-        nfa: NFA = self._parse_concat(input)
+        left = self._parse_quantifier(input)
 
-        if  (next_char := self._peek(input)) and next_char == '|':
-            self._get_token(input) #consume pipe 
-            nfa_rigth = self._build_nfa(input)
+        while  (next_char := self._peek(input)) and next_char == '|':
+            self._get_token(input)
+            rigth = self._parse_concat(input)  
+            left = UnionRUle(left, rigth)
             
-            nfa.adjency_dict
-        
+        return left
+
+
+    def _parse_quantifier(self, input: str):
+        rule = self._parse_concat(input)
+
+        while (next_char := self._peek(input)) and next_char in "?*+":
+            token = self._get_token(input)
+
+            match(token.type):
+                case TokenType.PLUS:
+                    rule = PlusRule(rule) 
+
+                case TokenType.STAR:
+                    rule = StarRule(rule)
+
+                case TokenType.QUESTION:
+                    rule = QuestionRule(rule)
+
+        return rule
+
 
     def _parse_concat(self, input: str):
-        nfa: NFA = self._parse_atom(input)
+        left  = self._get_token(input)
 
-
-    def _parse_atom(self, input: str):
-        token = self._get_token(input)
-        
-        if not token:
-            return None
-        
-        if token.type == TokenType.OPEN_PAR:
-            self._parse_union(input)
+        if left.type == TokenType.OPEN_PAR:
+            left = self._parse_union(input)
 
             if self._get_token(input).type != TokenType.CLOSE_PAR:
                 raise Exception("Invalid regex pattern, missing closing )")
 
+        while (next_char := self._peek(input)) and next_char not in ")|?*+":
 
-        nfa = NFA()
-        nfa.add_rule(State.START, State.END, token.value)
+            if next_char == '(':
+                self._get_token(input)
+                right = self._parse_union(input)
+                left = ConcatRUle(left, right)
 
-        return nfa
+                if self._get_token(input).type != TokenType.CLOSE_PAR:
+                    raise Exception("Invalid regex pattern, missing closing )")
+            else:
+                rigth = self._get_token(input)
+                left = ConcatRUle(left, rigth)
 
-    
+        return left
+
+
     def _build_nfa(self, parsed_regex_expression):
         pass 
 
 
     def match(self, pattern: str, string: str):
-        parsed_regex = self.parse_regex(pattern)
-        nfa: NFA = self._build_nfa(parsed_regex)
-        nfa.match(string)
+        if not self.nfa:
+            self.input_len = len(pattern)
+            parsed_regex = self.parse_regex(pattern)
+            print(parsed_regex)
+            # nfa: NFA = self._build_nfa(parsed_regex)
+            # nfa.match(string)
+
+        else:
+            self.nfa.match(string)
 
 if __name__ == "__main__":
-    pattern = r"\aa|b"
+    pattern = r"\aa(a|b)"
     text = "aa"
     # input = "a|b*"
     re = Regex()
