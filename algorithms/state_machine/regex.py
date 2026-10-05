@@ -33,13 +33,13 @@ class RuleType(Enum):
 #define the nodes of the AST
 
 class UnionRUle:
-    def __init__(self, left, rigth = None): 
+    def __init__(self, left, right = None): 
         self.type = RuleType.UNION
         self.left = left 
-        self.rigth = rigth
+        self.right = right
 
     def __repr__(self):
-        return f"UnionRule(left={self.left!r}, right={self.rigth!r})"
+        return f"UnionRule(left={self.left!r}, right={self.right!r})"
 
 
 class QuestionRule:
@@ -70,13 +70,13 @@ class StarRule:
 
 
 class ConcatRule:
-    def __init__(self, left, rigth = None): 
+    def __init__(self, left, right = None): 
         self.type = RuleType.CONCAT
         self.left = left 
-        self.rigth = rigth
+        self.right = right
 
     def __repr__(self):
-        return f"ConcatRule(left={self.left!r}, right={self.rigth!r})"
+        return f"ConcatRule(left={self.left!r}, right={self.right!r})"
 
 
 class Regex:
@@ -117,6 +117,10 @@ class Regex:
             case '\\':
                 self.input_pos += 1 #consume the escape token
                 curr_char = input[self.input_pos]
+
+                if curr_char in "ntrf0":
+                    curr_char = f"\{curr_char}"
+
                 token_type = TokenType.ATOM
 
             case _ :
@@ -147,8 +151,8 @@ class Regex:
 
         while  (next_char := self._peek(input)) and next_char == '|':
             self._get_token(input)
-            rigth = self._parse_union(input)  
-            left = UnionRUle(left, rigth)
+            right = self._parse_union(input)  
+            left = UnionRUle(left, right)
             
         return left
 
@@ -156,8 +160,8 @@ class Regex:
     def _parse_concat(self, input: str):
         left = self._parse_quantifier(input)
         while (next_char := self._peek(input)) and next_char not in "|)":
-            rigth = self._parse_quantifier(input)
-            left = ConcatRule(left, rigth)
+            right = self._parse_quantifier(input)
+            left = ConcatRule(left, right)
 
         return left
             
@@ -199,12 +203,12 @@ class Regex:
 
             case RuleType.UNION:
                 nfa = self._build_nfa(parsed_regex_expression.left)
-                self._state_index = nfa.union(self._build_nfa(parsed_regex_expression.rigth), self._state_index)
+                self._state_index = nfa.union(self._build_nfa(parsed_regex_expression.right), self._state_index)
                 return nfa
 
             case RuleType.CONCAT:
                 nfa = self._build_nfa(parsed_regex_expression.left)
-                self._state_index = nfa.concat(self._build_nfa(parsed_regex_expression.rigth), self._state_index)
+                self._state_index = nfa.concat(self._build_nfa(parsed_regex_expression.right), self._state_index)
                 return nfa
 
             case RuleType.QUESTION:
@@ -232,7 +236,7 @@ class Regex:
             parsed_regex = self.parse_regex(pattern)
             print(parsed_regex)
 
-            if self.parse_regex:
+            if parsed_regex:
                 self.nfa = self._build_nfa(parsed_regex)
                 return self.nfa.match(string)
 
@@ -245,8 +249,11 @@ class Regex:
 if __name__ == "__main__":
     pattern = r"\aa(a|b)*|b"
     pattern = r"a|b|c"
-    # pattern = r".*"
+    pattern = r"\n"
+    pattern = r"b.*"
+    pattern = r".*b"
+    pattern = r"(a|b)*"
     # pattern = r"((\aa)+a)*|b"
-    text = "aa"
+    text = "ae"
     re = Regex()
     print(re.match(pattern, text))

@@ -50,22 +50,22 @@ class RedirCommand:
         return f"RedirCommand(command={self.command!r}, file={self.file!r}, mode={self.mode!r})"
 
 class PipeCommand:
-    def __init__(self, left: str, rigth: str = None):
+    def __init__(self, left: str, right: str = None):
         self.command_type = CommandType.PIPE
         self.left = left
-        self.rigth = rigth
+        self.right = right
 
     def __repr__(self):
-        return f"PipeCommand(left={self.left!r}), rigth={self.rigth!r}"
+        return f"PipeCommand(left={self.left!r}), right={self.right!r}"
 
 class ListCommand:
-    def __init__(self,left: str, rigth: str = None):
+    def __init__(self,left: str, right: str = None):
         self.command_type = CommandType.LIST
         self.left = left
-        self.rigth = rigth
+        self.right = right
 
     def __repr__(self):
-        return f"ListCommand(left={self.left!r}), rigth={self.rigth!r}"
+        return f"ListCommand(left={self.left!r}), right={self.right!r}"
 
 class BackCommand:
     def __init__(self, command: str):
@@ -162,8 +162,8 @@ class ShellParser:
 
                     case TokenType.SEPARATOR:
                         command = ListCommand(command)
-                        rigth = self._parse_line(input)
-                        command.rigth = rigth
+                        right = self._parse_line(input)
+                        command.right = right
 
                     case TokenType.AND:
                         command = BackCommand(command)
@@ -171,8 +171,8 @@ class ShellParser:
                         if self._peek(input) in ";":
                             token: Token = self._get_token(input)
                             command = ListCommand(command)
-                            rigth = self._parse_line(input)
-                            command.rigth = rigth
+                            right = self._parse_line(input)
+                            command.right = right
 
 
             return command
@@ -185,8 +185,8 @@ class ShellParser:
             self._get_token(input) #consume the pipe token
             command = PipeCommand(command) #wrap the previously parsed commmand into a pipe command to generate the AST 
 
-            rigth = self._parse_line(input) #go back to the top to parse the rigth hand side of the pipe
-            command.rigth = rigth
+            right = self._parse_line(input) #go back to the top to parse the right hand side of the pipe
+            command.right = right
 
         return command
 

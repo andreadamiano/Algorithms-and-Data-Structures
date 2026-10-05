@@ -118,7 +118,7 @@ def check_block_planarity(adj_dict: dict[list[int]], parent_node: int = None, cu
                 left.append((current_node, neighbor))
                 back_edges.add((current_node, neighbor))
                 back_edges.add((neighbor, current_node))
-            else: #check for a backup non overlapping window on the rigth
+            else: #check for a backup non overlapping window on the right
                 for source, dest in right:
                     if (spine_node_dict[source] < spine_node_dict[current_node] and spine_node_dict[dest] < spine_node_dict[neighbor]) or (spine_node_dict[source] > spine_node_dict[current_node] and spine_node_dict[dest] > spine_node_dict[neighbor]):
                         return False

@@ -14,22 +14,30 @@ class Rule:
         self.matcher = matcher
 
     def _transition(self, input) -> bool:
-        return self.destination if not self.matcher or input == self.matcher else State.DEAD
+        return self.destination if not self.matcher or input == self.matcher or self.matcher == '.' else State.DEAD
 
 class NFA:
     
     def __init__(self, matcher = None):
-        self._adjency_dict: dict[State, list[Rule]] = defaultdict(list)
+        self._adjency_dict: dict[State, set[Rule]] = defaultdict(set)
         self._end_rules: set[Rule] = set() #efficien lookup of end rules
 
         if matcher:
             self.add_rule(State.START, State.END, matcher)
 
+    def _add_rule(self, rule: Rule):
+        self._adjency_dict[rule.source].add(rule)
+        
+        if rule.destination == State.END or rule.source == State.END:
+            self._end_rules.add(rule)
+
+        return rule
+
     def add_rule(self, source, destination, matcher: str = None) -> Rule:
         rule = Rule(source, destination, matcher)
-        self._adjency_dict[rule.source].append(rule)
+        self._adjency_dict[rule.source].add(rule)
 
-        if destination == State.END:
+        if destination == State.END or source == State.END:
             self._end_rules.add(rule)
 
         return rule
@@ -54,44 +62,50 @@ class NFA:
         """
         Matches either the current nfa or the provided nfa
         """
-        rigth = left + 1
+        right = left + 1
+
         #remove starting nodes
-        self._adjency_dict[State.START][0].source = left
-        self._adjency_dict[left] = self._adjency_dict[State.START]
-        self._adjency_dict.pop(State.START)
+        for rule in self._adjency_dict[State.START].copy():
+            rule.source = left
+            self._adjency_dict[left].add(rule)
+            self._adjency_dict[State.START].remove(rule)
         
-        self._adjency_dict.update(nfa._adjency_dict)
-        self._adjency_dict[State.START][0].source = rigth
-        self._adjency_dict[rigth] = self._adjency_dict[State.START]
-        self._adjency_dict.pop(State.START)
+        self._adjency_dict.update(nfa._adjency_dict) #the 2 nfa state sets must be disjoint
+
+        for rule in self._adjency_dict[State.START].copy():
+            rule.source = right
+            self._adjency_dict[right].add(rule)
+            self._adjency_dict[State.START].remove(rule)
 
         #add epsilon transitions
-        self.add_rule(State.START, rigth)
+        self.add_rule(State.START, right)
         self.add_rule(State.START, left)
 
         #update end rules
         self._end_rules.update(nfa._end_rules)
 
-        return rigth + 1
+        return right + 1
 
 
     def star(self, new):
         """
         Matches 0 or more of the current nfa
         """
-        #remove ending states and connect every ending rule back to the old start via epsilon transitions
+        #remove ending rules 
         for rule in self._end_rules.copy():
             rule.destination = new #change the rule
             self._end_rules.remove(rule)
-            rule = self.add_rule(new, State.END) #connect the renamed state back to the old starting state
+        
+        #connect old end state back to the start state via epsilon transition
+        self.add_rule(new, State.END) 
 
-        #remove starting state and make it an ending node
-        self._adjency_dict[State.START][0].source = State.END
+        #remove starting rules and make them ending rules 
+        for rule in self._adjency_dict[State.START].copy():
+            rule.source = State.END
+            self._adjency_dict[State.START].remove(rule)
+            self._add_rule(rule)
 
-        self._adjency_dict[State.END] = self._adjency_dict[State.START]
-        self._adjency_dict.pop(State.START)
-
-        #add new starting state
+        #add a new starting state
         self.add_rule(State.START, State.END)
 
         return new + 1
@@ -104,7 +118,7 @@ class NFA:
         #add nfa adjency dict 
         nfa_start = new
         nfa_start_rules = nfa._adjency_dict.pop(State.START)
-        self._adjency_dict.update(nfa._adjency_dict)
+        self._adjency_dict.update(nfa._adjency_dict) #the 2 nfa state sets must be disjoint
         nfa._adjency_dict[State.START] = nfa_start_rules #restore starting state of the other nfa
 
         #remove end rules of the current nfa
