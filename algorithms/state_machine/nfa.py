@@ -21,6 +21,7 @@ class NFA:
     def __init__(self, matcher = None):
         self._adjency_dict: dict[State, set[Rule]] = defaultdict(set)
         self._end_rules: set[Rule] = set() #efficien lookup of end rules
+        self._start_rules: set[Rule] = set() #efficien lookup of start rules
 
         if matcher:
             self.add_rule(State.START, State.END, matcher)
@@ -31,6 +32,9 @@ class NFA:
         if rule.destination == State.END or rule.source == State.END:
             self._end_rules.add(rule)
 
+        if rule.destination == State.END or rule.source == State.END:
+            self._start_rules.add(rule)
+
         return rule
 
     def add_rule(self, source, destination, matcher: str = None) -> Rule:
@@ -39,6 +43,9 @@ class NFA:
 
         if destination == State.END or source == State.END:
             self._end_rules.add(rule)
+
+        if rule.destination == State.END or rule.source == State.END:
+            self._start_rules.add(rule)
 
         return rule
 
@@ -65,14 +72,14 @@ class NFA:
         right = left + 1
 
         #remove starting nodes
-        for rule in self._adjency_dict[State.START].copy():
+        for rule in self._start_rules.copy():
             rule.source = left
             self._adjency_dict[left].add(rule)
             self._adjency_dict[State.START].remove(rule)
         
         self._adjency_dict.update(nfa._adjency_dict) #the 2 nfa state sets must be disjoint
 
-        for rule in self._adjency_dict[State.START].copy():
+        for rule in self._start_rules.copy():
             rule.source = right
             self._adjency_dict[right].add(rule)
             self._adjency_dict[State.START].remove(rule)
@@ -100,7 +107,7 @@ class NFA:
         self.add_rule(new, State.END) 
 
         #remove starting rules and make them ending rules 
-        for rule in self._adjency_dict[State.START].copy():
+        for rule in self._start_rules.copy():
             rule.source = State.END
             self._adjency_dict[State.START].remove(rule)
             self._add_rule(rule)
@@ -117,14 +124,21 @@ class NFA:
         """
         #add nfa adjency dict 
         nfa_start = new
-        nfa_start_rules = nfa._adjency_dict.pop(State.START)
+        nfa_start_rules = nfa._adjency_dict.pop(State.START) #temporary remove the starting state of the other nfa to make the 2 nfa state sets disjoint
         self._adjency_dict.update(nfa._adjency_dict) #the 2 nfa state sets must be disjoint
         nfa._adjency_dict[State.START] = nfa_start_rules #restore starting state of the other nfa
 
         #remove end rules of the current nfa
         new += 1
         for rule in self._end_rules.copy():
-            rule.destination = new
+            if rule.destination == State.END:
+                rule.destination = new
+
+            if rule.source == State.END:
+                rule.source = new
+                self._adjency_dict[State.END].remove(rule)
+                self._adjency_dict[rule.source].add(rule)
+
             self._end_rules.remove(rule)
         
         #add epsilon transition from the previous end of the current nfa with the old start of the provided nfa 

@@ -251,9 +251,10 @@ if __name__ == "__main__":
     pattern = r"a|b|c"
     pattern = r"\n"
     pattern = r"b.*"
-    pattern = r".*b"
-    pattern = r"(a|b)*"
+    pattern = r".*ciao"
+    pattern = r"a+|b"
+    # pattern = r"(a|b)*"
     # pattern = r"((\aa)+a)*|b"
-    text = "ae"
+    text = "webciao"
     re = Regex()
     print(re.match(pattern, text))
