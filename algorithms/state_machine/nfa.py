@@ -50,28 +50,29 @@ class NFA:
         return current_states
 
 
-    def union(self, nfa: "NFA", left, right):
+    def union(self, nfa: "NFA", left):
         """
         Matches either the current nfa or the provided nfa
         """
+        rigth = left + 1
         #remove starting nodes
         self._adjency_dict[State.START][0].source = left
         self._adjency_dict[left] = self._adjency_dict[State.START]
         self._adjency_dict.pop(State.START)
         
         self._adjency_dict.update(nfa._adjency_dict)
-        self._adjency_dict[State.START][0].source = right
-        self._adjency_dict[right] = self._adjency_dict[State.START]
+        self._adjency_dict[State.START][0].source = rigth
+        self._adjency_dict[rigth] = self._adjency_dict[State.START]
         self._adjency_dict.pop(State.START)
 
         #add epsilon transitions
-        self.add_rule(State.START, right)
+        self.add_rule(State.START, rigth)
         self.add_rule(State.START, left)
 
         #update end rules
         self._end_rules.update(nfa._end_rules)
 
-        return right + 1
+        return rigth + 1
 
 
     def star(self, new):
@@ -102,9 +103,9 @@ class NFA:
         """
         #add nfa adjency dict 
         nfa_start = new
-        dfa_start_rule_old = nfa._adjency_dict.pop(State.START)[0]
+        nfa_start_rules = nfa._adjency_dict.pop(State.START)
         self._adjency_dict.update(nfa._adjency_dict)
-        nfa._adjency_dict[State.START].append(dfa_start_rule_old) #restore starting state of the other nfa
+        nfa._adjency_dict[State.START] = nfa_start_rules #restore starting state of the other nfa
 
         #remove end rules of the current nfa
         new += 1
@@ -115,11 +116,14 @@ class NFA:
         #add epsilon transition from the previous end of the current nfa with the old start of the provided nfa 
         self.add_rule(new, nfa_start) 
 
-        #add back the old start of the other nfa
-        self.add_rule(nfa_start, dfa_start_rule_old.destination, dfa_start_rule_old.matcher)
+        #add back the old start rules of the other nfa
+        for rule in nfa_start_rules:
+            self.add_rule(nfa_start, rule.destination, rule.matcher)
 
         #update end rules
-        self._end_rules.update(nfa._end_rules)
+        for rule in nfa._end_rules.copy():
+            if rule.source != State.START:
+                self._end_rules.add(rule)
 
         return new + 1
 

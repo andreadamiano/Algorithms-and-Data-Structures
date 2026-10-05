@@ -86,7 +86,7 @@ class Regex:
     def __init__(self):
         self.input_pos = 0
         self.input_len = 0
-        self.state_index = 0 #autoincrementing index to assign to nfastates
+        self._state_index = 0 #auto incrementing index to assign to nfa states
         self.nfa: NFA = None
 
 
@@ -205,22 +205,32 @@ class Regex:
         match(parsed_regex_expression.type):
 
             case RuleType.UNION:
-                self.nfa.union(self._build_nfa(parsed_regex_expression.left), self._build_nfa(parsed_regex_expression.rigth))
+                nfa = self._build_nfa(parsed_regex_expression.left)
+                self._state_index = nfa.union(self._build_nfa(parsed_regex_expression.rigth), self._state_index)
+                return nfa
 
             case RuleType.CONCAT:
-                self.nfa.concat(self._build_nfa(parsed_regex_expression.left), self._build_nfa(parsed_regex_expression.rigth))
+                nfa = self._build_nfa(parsed_regex_expression.left)
+                self._state_index = nfa.concat(self._build_nfa(parsed_regex_expression.rigth), self._state_index)
+                return nfa
 
             case RuleType.QUESTION:
-                self.nfa.question(self.nfa)
+                nfa: NFA = self._build_nfa(parsed_regex_expression.rule)
+                nfa.question()
+                return nfa
 
             case RuleType.PLUS:
-                self.nfa.plus(self.nfa)
+                nfa: NFA = self._build_nfa(parsed_regex_expression.rule)
+                nfa.plus()
+                return nfa
 
             case RuleType.STAR:
-                self.nfa.star(self.nfa)
+                nfa: NFA = self._build_nfa(parsed_regex_expression.rule)
+                self._state_index =  nfa.star(self._state_index)
+                return nfa
 
             case _:
-                return NFA(parsed_regex_expression)
+                return NFA(parsed_regex_expression.value)
 
 
     def match(self, pattern: str, string: str):
@@ -230,8 +240,8 @@ class Regex:
             print(parsed_regex)
 
             if self.parse_regex:
-                nfa: NFA = self._build_nfa(parsed_regex)
-                nfa.match(string)
+                self.nfa = self._build_nfa(parsed_regex)
+                return self.nfa.match(string)
 
             else:
                 raise Exception("provided invalid regex expression")
@@ -241,9 +251,9 @@ class Regex:
 
 if __name__ == "__main__":
     pattern = r"\aa(a|b)"
-    pattern = r"(\aa)+a|b"
-    pattern = r"((\aa)+a)*|b"
-    text = "aa"
+    # pattern = r"(\aa)+a|b"
+    # pattern = r"((\aa)+a)*|b"
+    text = "aaa"
     # input = "a|b*"
     re = Regex()
-    re.match(pattern, text)
+    print(re.match(pattern, text))
