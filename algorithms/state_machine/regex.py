@@ -38,7 +38,7 @@ class UnionRUle:
         self.rigth = rigth
 
     def __repr__(self):
-        return f"UnionRUle(left={self.left!r}, right={self.rigth!r})"
+        return f"UnionRule(left={self.left!r}, right={self.rigth!r})"
 
 
 class QuestionRule:
@@ -75,7 +75,7 @@ class ConcatRUle:
         self.rigth = rigth
 
     def __repr__(self):
-        return f"ConcatRUle(left={self.left!r}, right={self.rigth!r})"
+        return f"ConcatRule(left={self.left!r}, right={self.rigth!r})"
 
 
 class Regex:
@@ -187,12 +187,9 @@ class Regex:
         while (next_char := self._peek(input)) and next_char not in ")|?*+":
 
             if next_char == '(':
-                self._get_token(input)
-                right = self._parse_union(input)
+                right = self._parse_quantifier(input)
                 left = ConcatRUle(left, right)
 
-                if self._get_token(input).type != TokenType.CLOSE_PAR:
-                    raise Exception("Invalid regex pattern, missing closing )")
             else:
                 rigth = self._get_token(input)
                 left = ConcatRUle(left, rigth)
@@ -250,10 +247,9 @@ class Regex:
             self.nfa.match(string)
 
 if __name__ == "__main__":
-    pattern = r"\aa(a|b)"
+    pattern = r"\aa(a|b)*|b"
     # pattern = r"(\aa)+a|b"
     # pattern = r"((\aa)+a)*|b"
-    text = "aaa"
-    # input = "a|b*"
+    text = "aa"
     re = Regex()
     print(re.match(pattern, text))
