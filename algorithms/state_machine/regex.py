@@ -11,6 +11,7 @@ class TokenType(Enum):
     PLUS = '+'
     UNION = '|'
     QUESTION = '?'
+    DOT = '.'   
 
 
 class Token:
@@ -68,7 +69,7 @@ class StarRule:
         return f"StarRule(rule={self.rule!r})"
 
 
-class ConcatRUle:
+class ConcatRule:
     def __init__(self, left, rigth = None): 
         self.type = RuleType.CONCAT
         self.left = left 
@@ -110,7 +111,7 @@ class Regex:
             self.input_pos += 1
 
         match curr_char:
-            case '|' | '(' | ')' | '*' | '+':
+            case '|' | '(' | ')' | '*' | '+' | '.':
                 token_type = TokenType(curr_char)
 
             case '\\':
@@ -142,18 +143,27 @@ class Regex:
 
 
     def _parse_union(self, input: str):
-        left = self._parse_quantifier(input)
+        left = self._parse_concat(input)
 
         while  (next_char := self._peek(input)) and next_char == '|':
             self._get_token(input)
-            rigth = self._parse_concat(input)  
+            rigth = self._parse_union(input)  
             left = UnionRUle(left, rigth)
             
         return left
 
 
+    def _parse_concat(self, input: str):
+        left = self._parse_quantifier(input)
+        while (next_char := self._peek(input)) and next_char not in "|)":
+            rigth = self._parse_quantifier(input)
+            left = ConcatRule(left, rigth)
+
+        return left
+            
+
     def _parse_quantifier(self, input: str):
-        left = self._parse_concat(input)
+        left = self._parse_atom(input)
 
         while (next_char := self._peek(input)) and next_char in "?*+":
             token = self._get_token(input)
@@ -168,14 +178,10 @@ class Regex:
                 case TokenType.QUESTION:
                     left = QuestionRule(left)
 
-            if (next_char := self._peek(input)) and next_char not in ")|?*+":
-                rigth = self._parse_concat(input)
-                left = ConcatRUle(left, rigth)
-
         return left
 
 
-    def _parse_concat(self, input: str):
+    def _parse_atom(self, input: str):
         left  = self._get_token(input)
 
         if left.type == TokenType.OPEN_PAR:
@@ -183,16 +189,6 @@ class Regex:
 
             if self._get_token(input).type != TokenType.CLOSE_PAR:
                 raise Exception("Invalid regex pattern, missing closing )")
-
-        while (next_char := self._peek(input)) and next_char not in ")|?*+":
-
-            if next_char == '(':
-                right = self._parse_quantifier(input)
-                left = ConcatRUle(left, right)
-
-            else:
-                rigth = self._get_token(input)
-                left = ConcatRUle(left, rigth)
 
         return left
 
@@ -248,7 +244,8 @@ class Regex:
 
 if __name__ == "__main__":
     pattern = r"\aa(a|b)*|b"
-    # pattern = r"(\aa)+a|b"
+    pattern = r"a|b|c"
+    # pattern = r".*"
     # pattern = r"((\aa)+a)*|b"
     text = "aa"
     re = Regex()
