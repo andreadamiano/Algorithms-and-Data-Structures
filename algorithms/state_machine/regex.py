@@ -33,7 +33,7 @@ class RuleType(Enum):
 
 class UnionRUle:
     def __init__(self, left, rigth = None): 
-        self.rule_type = RuleType.UNION
+        self.type = RuleType.UNION
         self.left = left 
         self.rigth = rigth
 
@@ -43,7 +43,7 @@ class UnionRUle:
 
 class QuestionRule:
     def __init__(self, rule): 
-        self.rule_type = RuleType.QUESTION
+        self.type = RuleType.QUESTION
         self.rule = rule 
 
     def __repr__(self):
@@ -52,7 +52,7 @@ class QuestionRule:
 
 class PlusRule:
     def __init__(self, rule): 
-        self.rule_type = RuleType.PLUS
+        self.type = RuleType.PLUS
         self.rule = rule 
 
     def __repr__(self):
@@ -61,7 +61,7 @@ class PlusRule:
 
 class StarRule:
     def __init__(self, rule): 
-        self.rule_type = RuleType.STAR
+        self.type = RuleType.STAR
         self.rule = rule 
 
     def __repr__(self):
@@ -70,7 +70,7 @@ class StarRule:
 
 class ConcatRUle:
     def __init__(self, left, rigth = None): 
-        self.rule_type = RuleType.CONCAT
+        self.type = RuleType.CONCAT
         self.left = left 
         self.rigth = rigth
 
@@ -153,22 +153,26 @@ class Regex:
 
 
     def _parse_quantifier(self, input: str):
-        rule = self._parse_concat(input)
+        left = self._parse_concat(input)
 
         while (next_char := self._peek(input)) and next_char in "?*+":
             token = self._get_token(input)
 
             match(token.type):
                 case TokenType.PLUS:
-                    rule = PlusRule(rule) 
+                    left = PlusRule(left) 
 
                 case TokenType.STAR:
-                    rule = StarRule(rule)
+                    left = StarRule(left)
 
                 case TokenType.QUESTION:
-                    rule = QuestionRule(rule)
+                    left = QuestionRule(left)
 
-        return rule
+            if (next_char := self._peek(input)) and next_char not in ")|?*+":
+                rigth = self._parse_concat(input)
+                left = ConcatRUle(left, rigth)
+
+        return left
 
 
     def _parse_concat(self, input: str):
@@ -197,7 +201,26 @@ class Regex:
 
 
     def _build_nfa(self, parsed_regex_expression):
-        pass 
+
+        match(parsed_regex_expression.type):
+
+            case RuleType.UNION:
+                self.nfa.union(self._build_nfa(parsed_regex_expression.left), self._build_nfa(parsed_regex_expression.rigth))
+
+            case RuleType.CONCAT:
+                self.nfa.concat(self._build_nfa(parsed_regex_expression.left), self._build_nfa(parsed_regex_expression.rigth))
+
+            case RuleType.QUESTION:
+                self.nfa.question(self.nfa)
+
+            case RuleType.PLUS:
+                self.nfa.plus(self.nfa)
+
+            case RuleType.STAR:
+                self.nfa.star(self.nfa)
+
+            case _:
+                return NFA(parsed_regex_expression)
 
 
     def match(self, pattern: str, string: str):
@@ -205,14 +228,21 @@ class Regex:
             self.input_len = len(pattern)
             parsed_regex = self.parse_regex(pattern)
             print(parsed_regex)
-            # nfa: NFA = self._build_nfa(parsed_regex)
-            # nfa.match(string)
+
+            if self.parse_regex:
+                nfa: NFA = self._build_nfa(parsed_regex)
+                nfa.match(string)
+
+            else:
+                raise Exception("provided invalid regex expression")
 
         else:
             self.nfa.match(string)
 
 if __name__ == "__main__":
     pattern = r"\aa(a|b)"
+    pattern = r"(\aa)+a|b"
+    pattern = r"((\aa)+a)*|b"
     text = "aa"
     # input = "a|b*"
     re = Regex()
