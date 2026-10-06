@@ -255,6 +255,6 @@ if __name__ == "__main__":
     pattern = r"a+|b"
     # pattern = r"(a|b)*"
     # pattern = r"((\aa)+a)*|b"
-    text = "webciao"
+    text = "b"
     re = Regex()
     print(re.match(pattern, text))
