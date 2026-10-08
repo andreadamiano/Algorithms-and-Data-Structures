@@ -3,7 +3,7 @@ from sortedcontainers import SortedList
 def build_skiline(buildings: list):
     result = []
     points = []
-    heights = SortedList([0])
+    heights = SortedList([0]) # a sorted list is essentially a b-tree 
     ongoing_height = 0
     for build in buildings:
         points.append([build[0], -build[2]]) #mark the starting of the building by marking the height as negative 
