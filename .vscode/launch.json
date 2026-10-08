@@ -28,7 +28,9 @@
       "request": "launch",
       "program": "${file}",
       "console": "integratedTerminal",
-      "justMyCode": true
+      "justMyCode": true,
+      "cwd": "${fileDirname}",
+      "args": ["trojan_quine.py"]
     }
   ]
 }

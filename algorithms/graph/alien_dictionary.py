@@ -113,7 +113,8 @@ def foreign_dictionary(words):
 
         if l1 > l2 and word_prev[:min_len] == word_curr[:min_len]:  # the 2 words are not lexicographically ordered
             return "" 
-        
+
+        # build the adjency list
         for j in range(min(l1, l2)):
             if word_prev[j] != word_curr[j]:
                 adjency_list[word_prev[j]].add(word_curr[j])
