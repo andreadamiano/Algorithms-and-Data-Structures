@@ -1,65 +1,72 @@
 def max_profit(k: int, prices: list):
     n = len(prices)
     #at each day i can either buy or sell a stock 
-
     #if the number of k is more then half the len of stock prices adopt a greedy approach by making every possible profitable trade  
+    #this approach doesn't take into account the fact that we are looking into the future
     if k >= len(prices) // 2:
         return sum(max(0, prices[i] - prices[i-1]) for i in range(1, len(prices)))
 
     #removed the time variable to reduce space complexity  
     #every state depends on the previous time (t-1) state, so it's sufficient to update the dp value in place 
-    buy = [-float('inf')] * (k + 1)  #buy[i] represent the max number of money you can have after making i transactions and currently holding a stock
+    buy = [-float('inf')] * (k + 1)  #buy[i] represent the max number of money you can have after making i transactions and currently holding a stock, initialize to -inf to incentivize executing the first trade
     sell= [0] * (k+1) #sell[i] represent the max number of money you can have after making i transactions and currently not holding a stock
 
+    #the transitions are deifned by a finite state machine:
+    #if you are in a buy state you can only sell and get a profit
+    #if yuo are in a sell state you can buy eroding the budget 
+    #dp essentially explore every state transition caching intermediate result to improve time complexity 
     for price in prices: #consume the daily price
         for j in range(1, k + 1): #consume a trade
-            buy[j] = max(buy[j], sell[j-1] - price) # max capital holding the stock 
-            sell[j] = max(sell[j], buy[j] + price) # max capital without holding the stock
+            sell[j] = max(sell[j], buy[j] + price) #max capital without holding the stock, choose if it's more convenient to sell the stock or hold it in order to sell it another time 
+            buy[j] = max(buy[j], sell[j-1] - price) #max capital holding the stock , choose if it's more convenient to buy the stock at the current price eroding the accumulaated capital or do nothing
 
     return sell[k]  #return the amount of money you have after k transaction without holding the stock
 
 
-def max_profit(k: int, prices: list):
-    """
-    Non space optimized solution
-    """
-    n = len(prices)
-    if n == 0 or k == 0:
-        return 0
+# def max_profit(k: int, prices: list):
+#     """
+#     Non space optimized solution
+#     """
+#     n = len(prices)
+#     if n == 0 or k == 0:
+#         return 0
     
-    #3d dp array, since i have to keep track of 3 variables at each step:
-    #- whats the day 
-    #- how many transaction have i used
-    #- am i currently holding a stock
-    #at each state we store the maximum profit
-    dp = [[[0, 0] for _ in range(k + 1)] for _ in range(n)]
+#     #3d dp array, since i have to keep track of 3 variables at each step:
+#     #- whats the day 
+#     #- how many transaction have i used
+#     #- am i currently holding a stock
+#     #at each state we store the maximum profit
+#     dp = [[[0, 0] for _ in range(k + 1)] for _ in range(n)]
 
-    # initialize first day 
-    for j in range(1, k + 1):
-        dp[0][j][0] = 0           
-        dp[0][j][1] = -prices[0]
+#     # initialize first day 
+#     for j in range(1, k + 1):
+#         dp[0][j][0] = 0           
+#         dp[0][j][1] = -prices[0]
 
 
-    #consume a day 
-    for i in range(1, n):
-        max_trades = min(k, (i+1)//2) #at day i we can have at most i/2 trades
-        for j in range(1, max_trades + 1): #consume a trade
-            # STATE: NOT HOLDING STOCK
-            # Either we didn't have it yesterday, 
-            # OR we had it and we are selling it today.
-            dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1] + prices[i])
+#     #consume a day 
+#     for i in range(1, n):
+#         max_trades = min(k, (i+1)//2) #at day i we can have at most i/2 trades
+#         for j in range(1, max_trades + 1): #consume a trade
+#             # STATE: NOT HOLDING STOCK
+#             # Either we didn't have it yesterday, 
+#             # OR we had it and we are selling it today.
+#             dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1] + prices[i])
             
-            # STATE: HOLDING STOCK
-            # Either we were already holding it from yesterday,
-            # OR we buy it today (using profit from the PREVIOUS transaction j-1)
-            dp[i][j][1] = max(dp[i-1][j][1], dp[i-1][j-1][0] - prices[i])
+#             # STATE: HOLDING STOCK
+#             # Either we were already holding it from yesterday,
+#             # OR we buy it today (using profit from the PREVIOUS transaction j-1)
+#             dp[i][j][1] = max(dp[i-1][j][1], dp[i-1][j-1][0] - prices[i])
 
 
-    print(dp)
+#     print(dp)
 
-    return dp[n-1][k][0]
+#     return dp[n-1][k][0]
 
 if __name__ == "__main__":
     k = 2
     prices = [3,2,6,5,0,3]
+
+    k=1
+    prices=[2,1,10,1]
     print(max_profit(k, prices))
