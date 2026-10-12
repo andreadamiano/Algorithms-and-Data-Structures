@@ -247,14 +247,15 @@ class Regex:
             self.nfa.match(string)
 
 if __name__ == "__main__":
-    pattern = r"\aa(a|b)*|b"
-    pattern = r"a|b|c"
-    pattern = r"\n"
-    pattern = r"b.*"
-    pattern = r".*ciao"
-    pattern = r"a+|b"
+    # pattern = r"\aa(a|b)*|b"
+    # pattern = r"a|b|c"
+    # pattern = r"\n"
+    # pattern = r"b.*"
+    # pattern = r".*ciao"
+    pattern = r"a|b"
     # pattern = r"(a|b)*"
     # pattern = r"((\aa)+a)*|b"
-    text = "b"
+    text = "ab"
+    # text = "andrea.damiano@yahoo.com"
     re = Regex()
     print(re.match(pattern, text))

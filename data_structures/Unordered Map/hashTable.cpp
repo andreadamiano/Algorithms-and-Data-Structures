@@ -27,8 +27,8 @@ class HashMap
         };  
 
         //define a type aliases
-        using Bucket = std::list<Entry>;
-        using BucketArray = std::vector<Bucket>;
+        using Bucket = std::list<Entry>; //each bucket is represented by a list since we must support insert dynamically new elemets
+        using BucketArray = std::vector<Bucket>; //we choose an array to holds the bucket since we need each bucket to be accessible by index
         using EntryIt = typename Bucket::iterator;
         using BucketIt = typename BucketArray::iterator;
 
