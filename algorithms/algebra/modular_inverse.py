@@ -4,11 +4,11 @@ def modular_inverse(a: int, m: int):
     """
     A modular inverse of an integer a is an integer x such that:
     a*x=1 % m
-    modular inverse does not always exists. The modular inverse only exists only and only if the a and m are relative prime (i.e. gcd(a,m) = 1)
+    modular inverse does not always exists. The modular inverse exists only and only if a and m are relative prime (i.e. gcd(a,m) = 1)
     The modular inverse can be found by solving the following equation:
     a*x + m*y = 1
     where this equation can be solved using the extended Euclidean algorithm, 
-    if we take the modulo of the expression above for both terms we get the modular iverse:
+    if we take the modulo of the expression above for both terms we get the modular inverse:
     a*x = 1 % m
     since y*m % m = 0
     so x will be the modular inverse 

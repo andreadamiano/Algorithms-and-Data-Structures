@@ -6,7 +6,7 @@ stack = []
 
 def find_blocks(adj_dict: dict[list[int]], blocks: list, visited = None, current_node = 1, parent_node = None, timer = 1, edge_visited: set = None): #if no parent is specified we root the spanning tree at node 1
     """
-    A block is a sub-piece of a graph that has no single bottleneck inside it, meaning it takes at least 2 nodes deletions to breack a block, makig it a separate connected component.
+    A block is a sub-piece of a graph that has no single bottleneck inside it, meaning it takes at least 2 nodes deletions to breack a block, making it a separate connected component.
     The algorithm uses dfs to construct the spannig tree of the graph, as it goes deeper the spanning tree it looks for backedges, which are edges forming a cycle with a node that 
     is higher in the spanning tree
     as it recurses it saves the encoutered edges into a stack to reconstruct the blocks present in the graph.
@@ -29,10 +29,10 @@ def find_blocks(adj_dict: dict[list[int]], blocks: list, visited = None, current
     visited.add(current_node)
 
     for neighbor in adj_dict[current_node]:
-        if neighbor == parent_node:
+        if neighbor == parent_node:  #do not visit the parent 
             continue
 
-        if (current_node, neighbor) in edge_visited:
+        if (current_node, neighbor) in edge_visited: #avoid visiting already visited edges 
             continue
 
         edge_visited.add((current_node, neighbor))
@@ -47,7 +47,8 @@ def find_blocks(adj_dict: dict[list[int]], blocks: list, visited = None, current
         elif parent_node: #if the node was already visited, it means there is a cycle, which means that the current node has a shortcut to a node that is higher on the spanning tree 
             child_encountered, child_lower = cache[neighbor]
             lower = min(child_encountered, lower)
-            cache[current_node] = (encountered, lower)
+        
+        cache[current_node] = (encountered, lower) #cache the new lower found
 
     #check if the parent node is a bottleneck node 
     if parent_node:
@@ -70,7 +71,7 @@ def find_blocks(adj_dict: dict[list[int]], blocks: list, visited = None, current
 
 def check_block_planarity(adj_dict: dict[list[int]], parent_node: int = None, current_node: int = 1, spine: set= None, spine_index = 0, spine_node_dict: dict = None, left: list = None, right: list = None, back_edges: set = None):
     """
-    The idea is to draw a block on a 2d plane withou line crossing.
+    The idea is to draw a block on a 2d plane without line crossing.
     It starts by stretching all edges found by dfs vertically on a spine.
     Every non tree edge is a back-edge jumping back to an ancestor.
     Since the main dfs spine is a vertical line, every back-edge can only curve around eihter to the left or to the right side of the spine,
@@ -132,12 +133,12 @@ def check_block_planarity(adj_dict: dict[list[int]], parent_node: int = None, cu
 
 def check_planarity(edges: list[int]):
     """
-    A graph is defined as planar if it can be drawned without crossing edges. For planar graphs it is valid the following Euler formula: V - E + F = 2, where
+    A graph is defined as planar if it can be drawed without crossing edges. For planar graphs it is valid the following Euler formula: V - E + F = 2, where
         - V: vertices
         - E: edges
         - F: faces
     this rule can be further generalized by the formula: E <= 3V - 6, in the case we don't know upfront the number of faces.
-    If a graph is not satisying this rule, for sure it's not planar.
+    If a graph is not satisfying this rule, for sure it's not planar.
     """
 
     #build the adjecny dict 
@@ -157,11 +158,14 @@ def check_planarity(edges: list[int]):
     #Euler original formual describes the relationship between vertex, edges and faces for a planar graph
     # V - E + F = 2
     #this formula defines that adding a new edge to a planar graph must either create a new vertex or a new face to keep the topology balanced 
-    #this can be demostrated via induction (demostrating that adding a new edge to a base case must be either creating a enw vertex or a new face) and by induction that for the case with n+1 edges the condition must still holds
+    #this can be demostrated via induction (demostrating that adding a new edge to a base case must be either creating a new vertex or a new face) and by induction that for the case with n+1 edges the condition must still holds
 
     if n_edges > 3 * n_vertices - 6: #generalization of the Euler formula
         return False
-        
+
+    #a graph is planar if and only if all of its biconnecrted componets are planar 
+    #that's because bloks are connected to one another exclusively via cut vertex, therefore you can safely take the planar embedding of any 2 blocks and merge them together via the shared vertex
+    #edges are ensured not to cross since 2 blocks shared no edges  
     find_blocks(adj_dict, blocks)
     print(blocks)
 
@@ -179,7 +183,7 @@ def check_planarity(edges: list[int]):
     return True
 
 if __name__ == "__main__":
-    # edges = [[1,2], [1,3],[2,3], [3,4]]
-    edges = [[1,2], [1,3],[2,3], [3,4], [4,2]]
+    edges = [[1,2], [1,3],[2,3], [3,4], [3,5]]
+    # edges = [[1,2], [1,3],[2,3], [3,4], [4,2]]
     # edges = [[1,2], [2,3],[3,4], [4,5], [5,1], [1,4], [1,3], [2,4], [2,5], [3,5]]
     print(check_planarity(edges))
