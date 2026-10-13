@@ -26,11 +26,13 @@
       "name": "Python: Current File",
       "type": "debugpy",
       "request": "launch",
-      "program": "${file}",
+      // "program": "${file}",
+      "module": "algorithms.graph.alice_and_the_cactus",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "cwd": "${fileDirname}",
-      "args": ["trojan_quine.py"]
+      // "cwd": "${fileDirname}",
+      "cwd": "${workspaceFolder}",
+      // "args": ["trojan_quine.py"]
     }
   ]
 }

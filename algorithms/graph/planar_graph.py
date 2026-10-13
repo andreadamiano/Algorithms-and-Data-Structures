@@ -1,10 +1,9 @@
 from collections import defaultdict
-import bisect
 
 cache = {}
 stack = []
 
-def find_blocks(adj_dict: dict[list[int]], blocks: list, visited = None, current_node = 1, parent_node = None, timer = 1, edge_visited: set = None): #if no parent is specified we root the spanning tree at node 1
+def find_blocks(adj_dict: dict[list[int]], blocks: list, visited = None, current_node = 1, parent_node = None, timer = 1): #if no parent is specified we root the spanning tree at node 1
     """
     A block is a sub-piece of a graph that has no single bottleneck inside it, meaning it takes at least 2 nodes deletions to breack a block, making it a separate connected component.
     The algorithm uses dfs to construct the spannig tree of the graph, as it goes deeper the spanning tree it looks for backedges, which are edges forming a cycle with a node that 
@@ -21,51 +20,38 @@ def find_blocks(adj_dict: dict[list[int]], blocks: list, visited = None, current
     if not visited:
         visited = set()
 
-    if edge_visited is None:
-        edge_visited = set()
-
     encountered = lower = timer
     cache[current_node] = (encountered, lower)
     visited.add(current_node)
 
     for neighbor in adj_dict[current_node]:
-        if neighbor == parent_node:  #do not visit the parent 
+        if neighbor == parent_node:  #do not visit the parent once again
             continue
 
-        if (current_node, neighbor) in edge_visited: #avoid visiting already visited edges 
-            continue
-
-        edge_visited.add((current_node, neighbor))
-        edge_visited.add((neighbor, current_node))
-        stack.append((current_node, neighbor)) #append the visited edge on the FIFO stack to pop them when a bottleneck node is found 
-
-        if neighbor not in visited:
-
-            child_encountered, child_lower = find_blocks(adj_dict, blocks, visited, neighbor, current_node, timer + 1, edge_visited)
-            lower = min(child_lower, lower)
-
-        elif parent_node: #if the node was already visited, it means there is a cycle, which means that the current node has a shortcut to a node that is higher on the spanning tree 
+        if neighbor in visited and parent_node: #if the node was already visited, it means there is a cycle, which means that the current node has a shortcut to a node that is higher on the spanning tree 
             child_encountered, child_lower = cache[neighbor]
             lower = min(child_encountered, lower)
-        
-        cache[current_node] = (encountered, lower) #cache the new lower found
+            stack.append((current_node, neighbor)) #append the visited edge on the FIFO stack to pop them when a bottleneck node is found 
 
-    #check if the parent node is a bottleneck node 
-    if parent_node:
-        parent_encountered, parent_lower = cache[parent_node]
+        elif neighbor not in visited:
+            stack.append((current_node, neighbor)) #append the visited edge on the FIFO stack to pop them when a bottleneck node is found 
+            child_encountered, child_lower = find_blocks(adj_dict, blocks, visited, neighbor, current_node, timer + 1)
+            lower = min(child_lower, lower)
 
-        if lower >= parent_encountered: #if the node didn't find any higher level nodes to hold on to, it means that the parent is the bottleneck node 
-            current_block = []
-            while True:
-                edge = stack.pop()
-                current_block.append(edge)
 
-                if edge == (parent_node, current_node):
-                    break
+            #check if the current node is a bottleneck node for the current child
+            if child_lower >= encountered: #if the node didn't find any higher level nodes to hold on to, it means that the parent is the bottleneck node 
+                current_block = []
+                while True:
+                    edge = stack.pop()
+                    current_block.append(edge)
 
-            blocks.append(current_block)
+                    if edge == (current_node, neighbor):
+                        break
 
-    cache[current_node] = (encountered, lower)
+                blocks.append(current_block)
+
+    cache[current_node] = (encountered, lower) #cache the new lower found
     return cache[current_node]
         
 

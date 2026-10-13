@@ -1,4 +1,4 @@
-from  extended_euclidean import extended_euclidean
+from  algorithms.algebra.extended_euclidean import extended_euclidean
 
 def modular_inverse(a: int, m: int):
     """
