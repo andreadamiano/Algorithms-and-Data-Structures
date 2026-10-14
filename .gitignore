@@ -21,3 +21,4 @@ solution.csv
 
 #ignore build
 build/
+__pycache__/
