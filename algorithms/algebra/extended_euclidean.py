@@ -19,7 +19,7 @@ def extended_euclidean(a: int, b: int):
     x = y1
     y = (x1 - y1*floor(a/b))
     this define a relation between the current coefficeints and the next coefficients.
-    This relationship has only one defect, specifies the current coefficient as a function of the next coeffieint, so in order to compute them we must first recurse down the algorithm and
+    This relationship has only one defect, specifies the current coefficient as a function of the next coefficient, so in order to compute them we must first recurse down the algorithm and
     then bubble up.
     To find them iteratively instead we must express each of the 2 starting numbers a and b as a linear combination of the original number a and b, then as we progress down the Euclidan algorithm
     computing the next number of the sequence B'= A - qB, we use the previous linear combinations to express the newly found number as a linear combination of the original number a and b iteratively adjusting the coefficients:
