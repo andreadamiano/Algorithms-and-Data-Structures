@@ -5,7 +5,7 @@ stack = []
 
 def find_blocks(adj_dict: dict[list[int]], blocks: list, visited = None, current_node = 1, parent_node = None, timer = 1): #if no parent is specified we root the spanning tree at node 1
     """
-    A block is a sub-piece of a graph that has no single bottleneck inside it, meaning it takes at least 2 nodes deletions to breack a block, making it a separate connected component.
+    A block is a sub-piece of a graph that has no single bottleneck inside it, meaning it takes at least 2 nodes deletions to break a block, making it a separate connected component.
     The algorithm uses dfs to construct the spannig tree of the graph, as it goes deeper the spanning tree it looks for backedges, which are edges forming a cycle with a node that 
     is higher in the spanning tree
     as it recurses it saves the encoutered edges into a stack to reconstruct the blocks present in the graph.
@@ -39,8 +39,8 @@ def find_blocks(adj_dict: dict[list[int]], blocks: list, visited = None, current
             lower = min(child_lower, lower)
 
 
-            #check if the current node is a bottleneck node for the current child
-            if child_lower >= encountered: #if the node didn't find any higher level nodes to hold on to, it means that the parent is the bottleneck node 
+            #while bubbling up the recursive stack check if the current node is a bottleneck node for the current child
+            if child_lower >= encountered: #if the node didn't find any higher level nodes to hold onto, it means that the parent is the bottleneck node 
                 current_block = []
                 while True:
                     edge = stack.pop()

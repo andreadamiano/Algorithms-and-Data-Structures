@@ -2,11 +2,13 @@ def arrest_elephants(m, k, tests):
     """brute force bitmask solution"""
     n = len(tests)
 
-    for mask in range(0, (1<<n)):
+    for mask in range(0, (1<<n)): #the generated mask can increase the score of the ith elefant by 1 
 
         for i in range(0, n-k+1):
             max_test = 0
             max_num = 0
+
+            #test every sliding window
             for j in range(i, i+k):
                 current_test = tests[j] + ((mask >> j) & 1)
 
