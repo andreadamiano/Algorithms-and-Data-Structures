@@ -62,10 +62,10 @@ class OrderedDict:
     
     def put(self, key, value):
         if key in self.dict:
-            self._remove_node(self.dict[key])
+            self._remove_node(self.dict[key]) #remove node from the current position
 
         self.dict[key] = (node := Node(key, value))
-        self._append(node)
+        self._append(node) #apppend the node to the end of the queue (since it was the last recently used key)
 
 
 class LFUCache:
@@ -80,10 +80,6 @@ class LFUCache:
         if key_frequency < self.min_frequency:
             self.min_frequency = key_frequency
 
-        #if the min frequency bin is empty increase the min frequency
-        elif key_frequency == self.min_frequency and self.cache[self.min_frequency].empty():
-            self.min_frequency += 1
-
     def empty(self):
         return len(self.cache) == 0
 
@@ -95,7 +91,8 @@ class LFUCache:
         key_frequency = self.use_counter[key]
         value = self.cache[key_frequency].pop_key(key)
         self.use_counter[key] += 1
-        self.cache[key_frequency+1].put(key, value)
+        key_frequency += 1
+        self.cache[key_frequency].put(key, value)
 
         #check if it was the least frequent item and if that slot is empty (in order to update the min frequency value)
         self._update_min_frequency(key_frequency)
@@ -110,7 +107,7 @@ class LFUCache:
             key_frequency = self.use_counter[key]
             self.cache[key_frequency].pop_key(key)
 
-        elif len(self.cache) + 1 >= self.capacity:  #if there are no more slots remove the least frequent key
+        elif len(self.use_counter) + 1 > self.capacity:  #if there are no more slots remove the least frequent key
             value_pop = self.cache[self.min_frequency].pop()  
             self.use_counter.pop(value_pop)
 
@@ -128,6 +125,7 @@ if __name__ == "__main__":
     lru.put(1, 1)
     lru.put(2, 2)
     lru.put(3,3)
+    lru.put(4,4)
 
     lru.get(1)
     lru.get(2)
