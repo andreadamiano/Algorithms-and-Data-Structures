@@ -17,10 +17,10 @@ def max_profit(k: int, prices: list):
     #dp essentially explore every state transition caching intermediate result to improve time complexity 
     for price in prices: #consume the daily price
         for j in range(1, k + 1): #explore the possibility of consuming a trade 
-            sell[j] = max(sell[j], buy[j] + price) #max capital without holding the stock, choose if it's more convenient to sell the stock or hold it in order to sell it another time 
-            buy[j] = max(buy[j], sell[j-1] - price) #max capital holding the stock , choose if it's more convenient to buy the stock at the current price eroding the accumulaated capital or do nothing (the sell dp represent the end of a trade, so in order to evaluate the current capital buying the stock at the current price you must consider the capital gain from the previous trade)
+            sell[j] = max(sell[j], buy[j] + price) #max capital without holding the stock after selling i times, choose if it's more convenient to sell the stock or hold it in order to sell it another time 
+            buy[j] = max(buy[j], sell[j-1] - price) #max capital holding the stock after buying i times, choose if it's more convenient to buy the stock at the current price eroding the accumulated capital up until the previous completed trade or do nothing 
 
-    return sell[k]  #return the amount of money you have after k transaction without holding the stock
+    return sell[k]  #return the amount of money you have after k transaction without holding the stock (the sell represent the end of a trade)
 
 
 # def max_profit(k: int, prices: list):
