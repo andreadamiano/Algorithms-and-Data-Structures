@@ -6,6 +6,7 @@
 *.exe
 *.dll
 *.pyd
+*.pyc
 
 # Ignore large media files
 *.gif

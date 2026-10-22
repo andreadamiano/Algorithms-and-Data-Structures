@@ -95,10 +95,9 @@ class Regex:
         if self.input_pos == len(input):
             return None
 
-        i = self.input_pos
         curr_char = None
-        while self.input_pos < self.input_len and (curr_char := input[i]) == " ":
-            i += 1
+        while self.input_pos < self.input_len and (curr_char := input[self.input_pos]) == " ":
+            self.input_pos += 1
 
         return curr_char
 
