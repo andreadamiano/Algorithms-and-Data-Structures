@@ -6,14 +6,17 @@ def main():
 
     input_file = sys.argv[1]
     content = ""
+    self_len = 0
 
     #read the quine content
     with open(input_file, "r") as input:
-        self = input.readline()
-        self_len = len(self)
+        while "self" not in (self := input.readline()):
+            self_len += len(self)
+
+        self_len += len(self)
 
         if "self" not in self:
-            print("quine must declare itself in the first line: e.g self = []")
+            print("quine must declare itself at the top: e.g self = []")
             exit(1)
 
         content += self.replace("]", "")
@@ -31,7 +34,8 @@ def main():
         code = input.read()
         content += code
 
-        with open(f"{input_file}_plus_self.py", "w") as output:
+        parts = input_file.split(".")
+        with open(f"{parts[0]}_plus_self.{parts[1]}", "w") as output:
             output.write(content)
 
 
