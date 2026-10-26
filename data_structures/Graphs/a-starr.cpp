@@ -111,13 +111,13 @@ int main ()
 
     auto nodeSFO = graph.addNode("SFO", 37.6189, -122.3750);  // San Francisco International
     auto nodeLAX = graph.addNode("LAX", 33.9425, -118.4081);  // Los Angeles International  
-    auto nodeDFW = graph.addNode("DFW", 32.8998, -97.0403);   // Dallas/Fort Worth (this one was correct)
-    auto nodeORD = graph.addNode("ORD", 41.9742, -87.9073);   // Chicago O'Hare (this one was correct)
-    auto nodeJFK = graph.addNode("JFK", 40.6413, -73.7781);   // New York JFK (this one was correct)
+    auto nodeDFW = graph.addNode("DFW", 32.8998, -97.0403);   // Dallas/Fort Worth
+    auto nodeORD = graph.addNode("ORD", 41.9742, -87.9073);   // Chicago O'Hare
+    auto nodeJFK = graph.addNode("JFK", 40.6413, -73.7781);   // New York JFK
     auto nodeBOS = graph.addNode("BOS", 42.3644, -71.0127);   // Boston Logan
     auto nodePVD = graph.addNode("PVD", 41.7240, -71.4282);   // Providence TF Green
     auto nodeBWI = graph.addNode("BWI", 39.1774, -76.6684);   // Baltimore/Washington
-    auto nodeMIA = graph.addNode("MIA", 25.7959, -80.2870);   // Miami International (this one was correct)
+    auto nodeMIA = graph.addNode("MIA", 25.7959, -80.2870);   // Miami International
 
     // add edges
     graph.addEdge(nodeSFO, nodeLAX, 337);
