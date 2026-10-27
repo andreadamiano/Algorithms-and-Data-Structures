@@ -24,12 +24,14 @@ def bfs(adj_dict: dict[dict[int]], node: int, sink_node: int):
 def min_cut(adj_dict: dict[dict[int]], source_node: int, sink_node: int):
     """
     Ford-Fulkerson algorithm to compute the max flow, it repetedly compute a path from the source to the sink
-    if a path is found decrement the forward capacity and increment the backward capacity,
-    repeat untill no more path are found, 
-    at the end of the algorithm the reachable nodes are part of the source split
-    the value of the split (sum of the forward flows edges form the source split to the sink split) is equal to the max flow
-
-    the problem requires to compute the cut with minimum edges (to be saturated), therefore a graph with all unit edges will be used, since: max flow = min cut = n edges * 1
+    if a path is found decrement the forward capacity and increment the backward capacity by the min capacity of the path (being the bottleneck of the path),
+    a path from the sink to the source is found if all edges has non maxed capacity both forward and backward,
+    repeat untill no more path are found.
+    The min cut, max flow theorem states that the max flow of a network is identical to the min cut, 
+    a cut of a network, divides the edges into 2 disjoint sets. The capacity of a cut is the sum of the capacity of the edges that crosses the 2 partitions (source partition and sink partition).
+    At the end of the algorithm the reachable nodes are part of the source partition of the min cut.
+    The problem requires to compute the cut with minimum edges (to be saturated), therefore a graph with all unit edges will be used, since: 
+    max flow = min cut = n edges * 1
     """
     residual_adj_dict = copy.deepcopy(adj_dict) #create a local copy
     result, path, min_capacity, _ = bfs(residual_adj_dict, source_node, sink_node)
@@ -38,8 +40,8 @@ def min_cut(adj_dict: dict[dict[int]], source_node: int, sink_node: int):
         for i in range(len(path)-1):
             source = path[i]
             sink = path[i+1]
-            residual_adj_dict[source][sink] -= min_capacity
-            residual_adj_dict[sink][source] += min_capacity
+            residual_adj_dict[source][sink] -= min_capacity #decrease forward capacity
+            residual_adj_dict[sink][source] += min_capacity #increase backward capacity
 
         result, path, min_capacity, visited = bfs(residual_adj_dict, source_node, sink_node)
 
@@ -53,7 +55,7 @@ def min_cut(adj_dict: dict[dict[int]], source_node: int, sink_node: int):
     return edges
 
 
-def compute_flows(adj_dict: dict[dict[int]], vertices: list, source_node: int, sink_node: int):
+def compute_flows(adj_dict: dict[dict[int]], flows: list, source_node: int, sink_node: int):
     """
     To compute the required flow at every edge the algorithm iterate over every node untill the inflow and the outflow of each node is equal for all.
     If the inflow is bigger then the outlow, find a path starting from current node to the sink and add the required flow.
@@ -64,14 +66,14 @@ def compute_flows(adj_dict: dict[dict[int]], vertices: list, source_node: int, s
 
     while not stop:
         stop = True
-        for vertex in range(1, len(vertices)):
-            flows = vertices[vertex]
+        for vertex in range(1, len(flows)):
+            inflows, outflows = flows[vertex]
             path = []
             if vertex == source_node or vertex == sink_node or flows[0] == flows[1]:
                 continue
 
             #inflow > outflow
-            elif flows[0] > flows[1]:
+            elif inflows > outflows:
                 _, path, _, _= bfs(adj_dict, vertex, sink_node) #find the path using the original adjency dict 
 
             #outflow > inflow
@@ -80,15 +82,15 @@ def compute_flows(adj_dict: dict[dict[int]], vertices: list, source_node: int, s
 
             if path:
                 stop = False
-                diff = abs(flows[0] - flows[1])
+                diff = abs(inflows - outflows)
                 for i in range(len(path)-1):
                     source = path[i]
                     sink = path[i + 1]
                     flow_dict[source][sink] += diff
 
                     #update also vertices
-                    vertices[source][1] += diff #outflow of source
-                    vertices[sink][0] += diff #inflow of sink
+                    flows[source][1] += diff #outflow of source
+                    flows[sink][0] += diff #inflow of sink
 
 
     return flow_dict
@@ -96,9 +98,12 @@ def compute_flows(adj_dict: dict[dict[int]], vertices: list, source_node: int, s
 
 
 def max_flow(n_vertices, n_edges, source_node, sink_node, edges):
+    """
+    
+    """
     adj_dict = defaultdict(dict)
     residual_adj_dict = defaultdict(dict)
-    vertices = [[0] * 2 for _ in range(n_vertices+1)]
+    flows = [[0] * 2 for _ in range(n_vertices+1)]
 
     for source, sink, indicator in edges:
         adj_dict[source][sink] = indicator
@@ -107,12 +112,12 @@ def max_flow(n_vertices, n_edges, source_node, sink_node, edges):
 
         #precompute inflow and outflow
         if indicator:
-            vertices[sink][0] += 1
-            vertices[source][1] += 1
+            flows[sink][0] += 1
+            flows[source][1] += 1
 
     # print(adj_dict)
     # print(vertices)
-    adj_dict_flows = compute_flows(adj_dict, vertices, source_node, sink_node)
+    adj_dict_flows = compute_flows(adj_dict, flows, source_node, sink_node)
     # print(adj_dict_flows)
     # print(vertices)
 

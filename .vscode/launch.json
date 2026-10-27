@@ -32,7 +32,7 @@
       "justMyCode": true,
       "cwd": "${fileDirname}",
       // "cwd": "${workspaceFolder}",
-      // "args": ["trojan_quine.py"]
+      "args": ["trojan_quine.py"]
     }
   ]
 }
