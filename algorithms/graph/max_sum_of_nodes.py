@@ -1,6 +1,6 @@
 def max_sum(nums, k, edges):
     """ 
-   This is presented as a graph problem, but we can optimize it by treating it as an array problem due to 3 key properties:
+    This is presented as a graph problem, but we can optimize it by treating it as an array problem due to 3 key properties:
     
     1) Reversibility of XOR
     2) The tree is connected
