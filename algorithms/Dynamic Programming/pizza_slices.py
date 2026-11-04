@@ -8,7 +8,7 @@ def _pick(slices: list[int]):
             if i < 2:
                 dp[pick][i] = max(dp[pick][i], dp[pick][i-1] + slices[i-1])
             else:
-                dp[pick][i] = max(dp[picks][i-1], max((dp[pick-1][i-2] + slices[i-1]), dp[pick][i]))
+                dp[pick][i] = max(dp[pick][i-1], max((dp[pick-1][i-2] + slices[i-1]), dp[pick][i]))
 
     return dp[picks][slices_len]
 
@@ -20,4 +20,5 @@ if __name__ == "__main__":
     slices = [1,2,3,4,5,6]
     slices = [8,9,8,6,1,1]
     slices = [4,1,2,5,8,3,1,9,7]
+    slices = [9,5,1,7,8,4,4,5,5,8,7,7]
     print(pick_slices(slices))
