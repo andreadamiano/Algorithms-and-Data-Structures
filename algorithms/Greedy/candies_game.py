@@ -1,6 +1,17 @@
 import heapq
 
 def move_candies(n: int, candies: list):
+    """
+    The problem asks to move all candies in exactly 2 boxes by repetedly choosing 2 boxes a and b, with candies x1 < x2 and move x1 candies from box b into a.
+    The solution adopt a greedy approach:
+    - get 3 boxes with the least amount of candies: a, b, c
+    - get the quotient of b/c
+    - express the quotient in binary notation 
+    - keep doubling the number of candies of the box a 
+    - when the quote has the least significant bit equal to 0, meaning it's not the right power of 2 sink a into c (in order to double its value)
+    - when the quote has the least significant bit equal to 1 sink the current value of a into b 
+    - consume a bit and repeat
+    """
 
     def count(heap: list):
         boxes = 0
@@ -18,7 +29,7 @@ def move_candies(n: int, candies: list):
 
     for index, candy in enumerate(candies):
         if candy:
-            heapq.heappush(heap, (candy, index))
+            heapq.heappush(heap, (candy, index)) #min heap
 
     boxes = count(heap)
 
@@ -27,7 +38,7 @@ def move_candies(n: int, candies: list):
     
     while  boxes > 2:
 
-        a, a_index = heapq.heappop(heap)
+        a, a_index = heapq.heappop(heap) #source
         b, b_index = heapq.heappop(heap) #accumulator
         c, c_index = heapq.heappop(heap) #drain
 
@@ -50,6 +61,7 @@ def move_candies(n: int, candies: list):
             quotient = quotient >> 1 #consume every bit of the quotient
             n_moves += 1
 
+        #push back the remaining boxes to count remaining boxes
         if a:
             heapq.heappush(heap, (a, a_index))
 
@@ -65,7 +77,10 @@ def move_candies(n: int, candies: list):
 
 if __name__ == "__main__":
     # n = 3
-    # candies = [3, 6, 9]
+    # candies = [3, 6, 9
+
+    # n = 3
+    # candies = [9, 4, 1]
 
     # n = 3
     # candies = [0, 1, 0]
