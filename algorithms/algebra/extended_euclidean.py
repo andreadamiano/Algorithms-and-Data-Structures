@@ -12,17 +12,22 @@ def extended_euclidean(a: int, b: int):
     gcd(a,b)=gcd(b,a%b) -> gcd = ax + by = bx1 + (a % b)y1
     (a%b) can also be rewritten as a-floor(a/b)*b
     using this identity we can express the gcd as a linear combination of:
-    g = bx1 + (a - floor(a/b)*b)*b
+    g = bx1 + (a - floor(a/b)*b)*y1
     which can be rewritten as:
     a*y1 + b*(x1-y1*floor(a/b))
-    therefore from the previous relation we get that:
+    therefore from the previous relation:
+    ax + by = bx1 + (a % b)y1
+    we get that:
     x = y1
     y = (x1 - y1*floor(a/b))
     this define a relation between the current coefficeints and the next coefficients.
     This relationship has only one defect, specifies the current coefficient as a function of the next coefficient, so in order to compute them we must first recurse down the algorithm and
     then bubble up.
-    To find them iteratively instead we must express each of the 2 starting numbers a and b as a linear combination of the original number a and b, then as we progress down the Euclidan algorithm
-    computing the next number of the sequence B'= A - qB, we use the previous linear combinations to express the newly found number as a linear combination of the original number a and b iteratively adjusting the coefficients:
+    To find them iteratively instead we must express each of the 2 current number A and B obtained iterating over the euclidean algorithm,
+    as a linear combination of the original number a and b. As we progress down the Euclidan algorithm the next numbers of the sequence are equal to:
+    B' = A - qB
+    A' = B
+    we use the previous linear combinations to express the newly found number as a linear combination of the previous number a and b:
     A' = B = xb*a + yb*b
     B' = A - q*B = (xa*a + ya*b) - q*(xb*a + yb*b) = (xa - q*xb)*a + (ya - q*yb)b
     which as a result provides:
@@ -30,9 +35,8 @@ def extended_euclidean(a: int, b: int):
     ya' = yb
     xb' = xa - q*xb
     yb' = ya - q*yb
-    ,where A and B represent the current A and B computed by the algorithm and a and b the origal input numbers.
-    This relation express the next number in the algotihm as a linear combination of the old coeffients (modified) and the original numbers, which is exactly what we need for the iterative solution.
-    At every iteration, since the linear combiation should be equals at every steps, also the coefficient shoould be equal, therefore the equation.
+    This relation express the next coefficient as a linear combination of the old coeffients, which is exactly what we need for the iterative solution.
+    At every iteration, since the linear combiation should be equals at every steps, the coefficient shoould be equal, therefore the equation obtained.
     """
 
     xa, ya = 1, 0
