@@ -5,7 +5,7 @@ def _pick(slices: list[int]):
 
     for pick in range(1, picks+1):
         for i in range(1, slices_len+1):
-            dp[pick][i] = max(dp[pick][i-1], max((dp[pick-1][i-2] + slices[i-1]), dp[pick][i]))
+            dp[pick][i] = max((dp[pick-1][i-2] + slices[i-1]), dp[pick][i-1])
 
     return dp[picks][slices_len]
 
