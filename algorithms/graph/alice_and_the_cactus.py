@@ -108,7 +108,7 @@ def remove_cactus(n, m, edges):
     # the edges that share 1 vertex
     # the edges that shares 0 vertex
     # to find all the pair of edges sharing 1 vertex compute sum_{i} deg(i)(deg(i)-1) (we count every pair twice since xixj element of the matrix is the same as xjxi)
-    a = sum(deg * (deg - 1) for deg in degs.values())
+    a = sum(deg * (deg - 1) for deg in degs.values()) #this represent the number of ways to choose 2 disting ordered edges 
     e_e_2 = ((INV4) * m + a * (INV8) + (m**2 - m - a) * (INV16)) % MOD
 
     # in the case of cycle-cycle pair the expectation of the off-diagonal c1 and c2 depends on the number of vertex they share
@@ -120,11 +120,13 @@ def remove_cactus(n, m, edges):
 
             else: 
                 shared_vertices = len(cycle1.intersection(cycle2)) #compute how many edges they share to get the probability of both cycles to remain
-                n_disjoint_vertices = len(cycle1) + len(cycle2) - shared_vertices
+                n_disjoint_vertices = len(cycle1) + len(cycle2) - shared_vertices #avoid counting twice shared vertices
                 e_c_2 = (e_c_2 + pow(INV2, n_disjoint_vertices, MOD)) % MOD
 
-    e_v_e = (((INV4) * 2 * m + (n * m - 2 * m) * (INV8)) % MOD)  #the off-diagonal elements represents the probability of having a vertex which is not part of the considered edge
+    #the off-diagonal elements represents the probability of having a vertex which is not part of the considered edge
+    e_v_e = (((INV4) * 2 * m + (n * m - 2 * m) * (INV8)) % MOD)  
 
+    #the off-diagonal elements represents the probability of having that is not part of the current cycle 
     e_v_c = 0
     for cycle in cycles:
         cycle_len = len(cycle)
