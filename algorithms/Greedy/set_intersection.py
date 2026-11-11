@@ -1,6 +1,9 @@
 import bisect
 
 def set_intersection(intervals: list):
+    """
+    A containing set is an array where each interval from intervals contains at least 2 integers from the result array
+    """
     result = []
     intervals.sort(key=lambda x: (x[1], -x[0])) #in order to optimize comparison between the overlapping windows sort by increasing ends and decreasing starts
     
@@ -8,7 +11,7 @@ def set_intersection(intervals: list):
         index = bisect.bisect_left(result, interval[0]) #efficiently find the smallest index that put the value in increasing sorted order 
 
         if not result or index >= len(result):
-            result.extend([interval[-1]-1, interval[-1]]) #greedy approach put the biggest index in the containing set
+            result.extend([interval[-1]-1, interval[-1]]) #greedy approach put the biggest indices in the containing set
 
         elif index == len(result)-1:
             result.append(interval[1]) #same greedy approach
