@@ -92,8 +92,6 @@ void CompressedTrie::insert(const std::string& word)
         //found a matching child 
         Node* child = it->second; 
         std::string& characters = child->characters; 
-        // std::string_view characters = child->characters;
-
 
         //find longest common prefix
         size_t i = 0; 
@@ -105,9 +103,8 @@ void CompressedTrie::insert(const std::string& word)
             current = child; 
             pos += i; 
         }
-        else
+        else //partial match 
         {
-            //partial match 
             std::string commonPrefix = characters.substr(0, i);
             std::string remainingExisting = characters.substr(i);
             std::string remainingNew = word.substr(pos + i);
@@ -139,7 +136,6 @@ void CompressedTrie::insert(const std::string& word)
         }
 
     }
-   return; 
 }
 
 
