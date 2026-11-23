@@ -16,14 +16,19 @@ def minimum_cost(source, target, original, changed, cost):
         if t not in id:
             id[t] = incremental_id
             incremental_id += 1
-        dist[id[s]][id[t]] = min(dist[id[s]][id[t]], c) #add an edge between the 2 source node and the destination node
+        dist[id[s]][id[t]] = min(dist[id[s]][id[t]], c) #add an edge between the source node and the destination node with the min cost
 
     #initialize the dp table 
     for i in range(incremental_id):
         dist[i][i] = 0
 
     #compute the shortest path of each node to each node (floyd-warshall algorithm)
-    for k in range(incremental_id): #the idea is to check if the current node could be used as a "stpping stone" to help a node reach another node
+    #the stepping stone should be the outer most loop, since it allow finding for each allowed set of stepping stones the shortest paths across all pairs of nodes before visiting the next stepping stone
+    # if the stepping stone loop were an inner loop, each (source, dest) pair would be evaluated across all stepping stones before other pairs have been updated with those stepping stones (and would never be revisited afterward), leading to an incorrect result
+    #therefore looping over teh stepping stone in the outermost loop ensures monotonic improvement across phases and complete shortest-path coverage once all stepping stones are processed
+    #tihs is because the same path can be monotonacally imporved tryig different intermediate stepping stones after the best local path using other stepping stone is completed
+    #this is because dist[source][dest] can keep improving as new stepping stones are tried after sub-paths from earlier stepping-stone phases have been updated
+    for k in range(incremental_id): #the idea is to check if the current node could be used as a "stepping stone" to help a node reach another node
         for i in range(incremental_id):
             if dist[i][k] < INF:
                 for j in range(incremental_id):
