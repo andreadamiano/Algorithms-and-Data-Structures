@@ -7,7 +7,7 @@ def minimum_cost(source, target, original, changed, cost):
 
     dist = [[INF]*201 for _ in range(201)] #edge matrix
 
-    #assign an id to every node (which is actually a string)
+    #assign an id to every node (represented by a string)
     for s, t, c in zip(original, changed, cost):
         if s not in id:
             id[s] = incremental_id

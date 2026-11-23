@@ -28,6 +28,18 @@ class Node:
         index = bisect.bisect_left(self.children_keys, key)
         self.children = self.children[:index] + [value] + self.children[index:]
 
+        #connect leaf nodes
+        if isinstance(value, Node) and value.external:
+            prev:Node = self.children[index - 1] if index - 1 >= 0 else None
+            next:Node = self.children[index + 1] if index + 1 <= MAX_CHILDREN + 1  else None
+            if prev:
+                value.prev = prev
+                prev.next = value
+
+            if isinstance(next, Node):
+                value.next = next
+                next.next = value
+
     def insert_key(self, key):
         index = bisect.bisect_left(self.children_keys, key)
         self.children_keys = self.children_keys[:index] + [key] + self.children_keys[index:]
@@ -36,8 +48,8 @@ class Node:
     def split(self):
         median = (MAX_CHILDREN + 1) // 2
         median_key = self.children_keys[median]
-        tmp_children_keys = self.children_keys[median:MAX_CHILDREN+1]
-        tmp_children = self.children[median:MAX_CHILDREN+1]
+        tmp_children_keys = self.children_keys[median:MAX_CHILDREN+2]
+        tmp_children = self.children[median:MAX_CHILDREN+2]
         self.children_keys = self.children_keys[:median]
         self.children = self.children[:median]
         self.size = median
@@ -105,5 +117,6 @@ if __name__ == "__main__":
     tree.insert(0, 0) #split
     tree.insert(4, 4) 
     tree.insert(3, 3) #split
-    # tree.insert(6, 6) 
+    tree.insert(6, 6) 
+    tree.insert(7, 7) 
     tree.insert(4,4)
