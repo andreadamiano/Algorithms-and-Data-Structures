@@ -30,20 +30,21 @@ class Parser:
             if next != ":":
                 raise Exception("Invalid json format")
 
-            next = self.peek()
-            result[key] = self._parse_value(next)
-
-            separator = self.peek()
+            result[key] = self._parse_value()
+            separator = self.peek() 
 
             if separator == ",":
                 self.consume()
+                
             elif separator != "}":
                 raise Exception("Invalid json format")
 
         self.consume() #consume closing }
         return result
     
-    def _parse_value(self, value):
+    def _parse_value(self):
+        value = self.peek()
+
         if value == "{":
             return self._parse_dict()
         elif value == "[":
