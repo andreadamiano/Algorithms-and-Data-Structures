@@ -89,7 +89,7 @@ class AvlTree:
         elif node.data == data:
             return node 
 
-        #update height and rebalance the node while bubbling up of the recursion stack 
+        #update height and rebalance the node while bubbling up of the recursive call stack 
         node.height = 1 + max(self.getHeight(node.left), self.getHeight(node.right))
         return self.rebalance_tree(node) #fix insertion
 
@@ -113,8 +113,8 @@ class AvlTree:
         elif node.data < data:
             node.right = self._deleteNode(node.right, data)
         
-        else:
-            #node found
+        else: #node found
+            
             if not node.left:
                 return node.right
             
@@ -124,7 +124,7 @@ class AvlTree:
             else: #node with 2 children
                 successor = self.inorder_successor(node.right)
                 node.data = successor.data #transplant the inorder successor
-                node.right = self._deleteNode(node.right, node.data) #re enter in order to  delete the duplicate node
+                node.right = self._deleteNode(node.right, node.data) #re enter in order to  delete the duplicate node (the inorder successor will have at most a right child)
         
         #update height and rebalance the node while bubbling up of the recursion stack 
         node.height = 1 + max(self.getHeight(node.left), self.getHeight(node.right))
